@@ -1,10 +1,6 @@
 package com.arkanoid.game.implementation;
 
-import com.arkanoid.game.model.brick.Brick;
-import com.arkanoid.game.model.brick.DefaultBrick;
-import com.arkanoid.game.model.brick.PersistentBrick;
-import com.arkanoid.game.model.brick.ResistentBrick;
-import com.arkanoid.game.model.brick.VeryResistentBrick;
+import com.arkanoid.game.model.Brick;
 
 /**
  * Various utility methods (static)
@@ -54,14 +50,15 @@ public abstract class Utils implements Constants {
 	public final static Brick intToBrick(final int i) {
 		switch (i) {
 		case 1:
-			return new ResistentBrick();
+			//return new ResistentBrick();
 		case 2:
-			return new VeryResistentBrick();
+			//return new VeryResistentBrick();
 		case 3:
-			return new PersistentBrick();
+			//return new PersistentBrick();
 		default:
-			return new DefaultBrick();
+			//return new DefaultBrick();
 		}
+		return null;
 	}
 
 }

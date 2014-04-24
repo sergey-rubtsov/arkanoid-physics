@@ -1,6 +1,6 @@
 package com.arkanoid.game.implementation;
 
-import com.arkanoid.game.model.level.Level;
+import com.arkanoid.game.model.Level;
 
 /**
  * Listen to game

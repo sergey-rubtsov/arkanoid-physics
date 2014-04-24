@@ -1,6 +1,6 @@
 package com.arkanoid.game.implementation;
 
-import com.arkanoid.game.model.vaus.Vaus;
+import com.arkanoid.game.model.Vaus;
 
 /**
  * Listen to vaus changes

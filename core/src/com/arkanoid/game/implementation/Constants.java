@@ -1,6 +1,6 @@
 package com.arkanoid.game.implementation;
 
-import com.arkanoid.game.model.level.LevelManager;
+import com.arkanoid.game.model.LevelManager;
 
 public interface Constants {
 	int TICKS_PER_SECOND = 10;

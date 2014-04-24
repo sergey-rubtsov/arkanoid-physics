@@ -1,4 +1,4 @@
-package com.arkanoid.game.model.level;
+package com.arkanoid.game.model;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -16,13 +16,6 @@ import java.util.Properties;
 import javax.swing.JOptionPane;
 
 import com.arkanoid.game.implementation.Constants;
-import com.arkanoid.game.model.bonus.Bonus;
-import com.arkanoid.game.model.bonus.Bonuses;
-import com.arkanoid.game.model.brick.Brick;
-import com.arkanoid.game.model.brick.DefaultBrick;
-import com.arkanoid.game.model.brick.PersistentBrick;
-import com.arkanoid.game.model.brick.ResistentBrick;
-import com.arkanoid.game.model.brick.VeryResistentBrick;
 
 /**
  * This class main purpose is to connect the Game with the Level Editor and the Game Frame
@@ -177,10 +170,10 @@ public class LevelManager implements Constants {
 		for (int i = 0; i < FIELD_ROWS; i++) {
 			for (int j = 0; j < FIELD_COLUMNS; j++) {
 				final Brick brick = stringToBrick(brickField[i][j]);
-				final Bonus bonus = Bonuses.stringToBonus(bonusField[i][j]);
-				if (bonus != null) {
-					brick.setBonus(bonus);
-				}
+				//final Bonus bonus = Bonuses.stringToBonus(bonusField[i][j]);
+				//if (bonus != null) {
+				//	brick.setBonus(bonus);
+				//}
 				field[i][j] = brick;
 			}
 		}
@@ -195,15 +188,11 @@ public class LevelManager implements Constants {
 	private final Brick stringToBrick(final String brickString) {
 		if (brickString == null) {
 			return null;
-		} else if (brickString.equals("defaultBrick")) {
-			return new DefaultBrick();
-		} else if (brickString.equals("resistentBrick")) {
-			return new ResistentBrick();
-		} else if (brickString.equals("veryResistentBrick")) {
-			return new VeryResistentBrick();
-		} else if (brickString.equals("persistentBrick")) {
-			return new PersistentBrick();
-		}
+		} else if (brickString.equals("defaultBrick")) 
+			{
+				return new Brick();
+			}
+			
 		return null;
 	}
 

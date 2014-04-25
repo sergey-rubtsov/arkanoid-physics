@@ -55,8 +55,6 @@ public class World {
 		rand = new Random();
 		generateLevel();
 
-		this.heightSoFar = 0;
-		this.score = 0;
 		this.state = WORLD_STATE_RUNNING;
 	}
 

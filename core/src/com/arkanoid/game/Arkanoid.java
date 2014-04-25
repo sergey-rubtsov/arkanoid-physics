@@ -20,7 +20,8 @@ public class Arkanoid extends Game {
 
 	@Override
 	public void render () {
-
+		super.render();
+		fps.log();
 	}
 	
 	@Override

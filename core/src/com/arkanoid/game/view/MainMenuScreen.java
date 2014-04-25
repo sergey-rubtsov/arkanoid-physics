@@ -37,7 +37,7 @@ public class MainMenuScreen implements Screen {
 	Rectangle playBounds;
 	Rectangle highscoresBounds;
 	Rectangle helpBounds;
-	Vector3 touchPoint;
+	Vector3 touchPoint;  
 
 	public MainMenuScreen (Game game) {
 		this.game = game;
@@ -47,6 +47,8 @@ public class MainMenuScreen implements Screen {
 		batcher = new SpriteBatch();
 		soundBounds = new Rectangle(0, 0, 64, 64);
 		playBounds = new Rectangle(160 - 150, 200 + 18, 300, 36);
+		/*highscoresBounds = new Rectangle(160 - 150, 200 - 18, 300, 36);
+		helpBounds = new Rectangle(160 - 150, 200 - 18 - 36, 300, 36);*/
 		touchPoint = new Vector3();
 	}
 
@@ -86,13 +88,13 @@ public class MainMenuScreen implements Screen {
 
 		batcher.enableBlending();
 		batcher.begin();
-		batcher.draw(Assets.logo, 160 - 274 / 2, 480 - 10 - 142, 274, 142);
+		//batcher.draw(Assets.logo, 160 - 274 / 2, 480 - 10 - 142, 274, 142);
 		batcher.draw(Assets.mainMenu, 10, 200 - 110 / 2, 300, 110);
 		batcher.draw(Settings.soundEnabled ? Assets.soundOn : Assets.soundOff, 0, 0, 64, 64);
 		batcher.end();
 
 		if (TimeUtils.nanoTime() - last > 2000000000) {
-			Gdx.app.log("SuperJumper",
+			Gdx.app.log("Arkanoid",
 				"version: " + Gdx.app.getVersion() + ", memory: " + Gdx.app.getJavaHeap() + ", " + Gdx.app.getNativeHeap()
 					+ ", native orientation:" + Gdx.input.getNativeOrientation() + ", orientation: " + Gdx.input.getRotation()
 					+ ", accel: " + (int)Gdx.input.getAccelerometerX() + ", " + (int)Gdx.input.getAccelerometerY() + ", "

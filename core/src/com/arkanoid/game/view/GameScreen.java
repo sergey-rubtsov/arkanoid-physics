@@ -133,10 +133,10 @@ public class GameScreen implements Screen {
 			if (Gdx.input.isKeyPressed(Keys.DPAD_RIGHT)) accel = -5f;
 			world.update(deltaTime, accel);
 		}
-		if (world.score != lastScore) {
+/*		if (world.score != lastScore) {
 			lastScore = world.score;
 			scoreString = "SCORE: " + lastScore;
-		}
+		}*/
 		if (world.state == World.WORLD_STATE_NEXT_LEVEL) {
 			state = GAME_LEVEL_END;
 		}
@@ -188,6 +188,8 @@ public class GameScreen implements Screen {
 		GL20 gl = Gdx.gl;
 		gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+		renderer.render();
+		
 		guiCam.update();
 		batcher.setProjectionMatrix(guiCam.combined);
 		batcher.enableBlending();

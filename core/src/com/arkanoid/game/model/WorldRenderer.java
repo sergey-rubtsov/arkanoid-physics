@@ -22,12 +22,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class WorldRenderer {
-	static final float FRUSTUM_WIDTH = 10;
-	static final float FRUSTUM_HEIGHT = 15;
+	static final float FRUSTUM_WIDTH = 100;
+	static final float FRUSTUM_HEIGHT = 150;
 	World world;
 	OrthographicCamera cam;
 	SpriteBatch batch;
-	TextureRegion background;
 
 	public WorldRenderer (SpriteBatch batch, World world) {
 		this.world = world;
@@ -36,7 +35,7 @@ public class WorldRenderer {
 		this.batch = batch;
 	}
 
-	public void render () {
+	public void render() {
 		//if (world.bob.position.y > cam.position.y) cam.position.y = world.bob.position.y;
 		cam.update();
 		batch.setProjectionMatrix(cam.combined);
@@ -55,12 +54,21 @@ public class WorldRenderer {
 	public void renderObjects () {
 		batch.enableBlending();
 		batch.begin();
-		renderBob();
-		renderPlatforms();
-		renderItems();
-		renderSquirrels();
-		renderCastle();
+		renderBall();
+		renderVaus();
 		batch.end();
+	}
+
+	private void renderVaus() {
+		TextureRegion vausFrame = Assets.defaultVaus;
+		batch.draw(vausFrame, FRUSTUM_WIDTH / 2, 1, 20, 5);
+		//batch.draw(vaus, x, y, width, height);
+		
+	}
+
+	private void renderBall() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private void renderBob () {

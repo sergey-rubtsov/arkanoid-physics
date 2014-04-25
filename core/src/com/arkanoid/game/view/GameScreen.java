@@ -19,7 +19,9 @@ package com.arkanoid.game.view;
 import com.arkanoid.game.Assets;
 import com.arkanoid.game.model.World.WorldListener;
 import com.arkanoid.game.model.World;
+import com.arkanoid.game.model.WorldRenderer;
 import com.badlogic.gdx.Application.ApplicationType;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -45,6 +47,7 @@ public class GameScreen implements Screen {
 	SpriteBatch batcher;
 	World world;
 	WorldListener worldListener;
+	WorldRenderer renderer;
 	
 	Rectangle pauseBounds;
 	Rectangle resumeBounds;
@@ -72,7 +75,8 @@ public class GameScreen implements Screen {
 			}		
 		
 		};
-
+		world = new World(worldListener);
+		renderer = new WorldRenderer(batcher, world);
 		pauseBounds = new Rectangle(320 - 64, 480 - 64, 64, 64);
 		resumeBounds = new Rectangle(160 - 96, 240, 192, 36);
 		quitBounds = new Rectangle(160 - 96, 240 - 36, 192, 36);
@@ -119,6 +123,33 @@ public class GameScreen implements Screen {
 			}
 		}		
 		ApplicationType appType = Gdx.app.getType();
+		
+		// should work also with Gdx.input.isPeripheralAvailable(Peripheral.Accelerometer)
+		if (appType == ApplicationType.Android || appType == ApplicationType.iOS) {
+			world.update(deltaTime, Gdx.input.getAccelerometerX());
+		} else {
+			float accel = 0;
+			if (Gdx.input.isKeyPressed(Keys.DPAD_LEFT)) accel = 5f;
+			if (Gdx.input.isKeyPressed(Keys.DPAD_RIGHT)) accel = -5f;
+			world.update(deltaTime, accel);
+		}
+		if (world.score != lastScore) {
+			lastScore = world.score;
+			scoreString = "SCORE: " + lastScore;
+		}
+		if (world.state == World.WORLD_STATE_NEXT_LEVEL) {
+			state = GAME_LEVEL_END;
+		}
+		if (world.state == World.WORLD_STATE_GAME_OVER) {
+			state = GAME_OVER;
+/*			if (lastScore >= Settings.highscores[4])
+				scoreString = "NEW HIGHSCORE: " + lastScore;
+			else
+				scoreString = "SCORE: " + lastScore;
+			Settings.addScore(lastScore);
+			Settings.save();*/
+		}
+		
 	}
 
 	private void updatePaused () {
@@ -140,7 +171,11 @@ public class GameScreen implements Screen {
 	}
 
 	private void updateLevelEnd () {
-
+		if (Gdx.input.justTouched()) {
+			world = new World(worldListener);
+			renderer = new WorldRenderer(batcher, world);
+			state = GAME_READY;
+		}
 	}
 
 	private void updateGameOver () {
@@ -178,15 +213,16 @@ public class GameScreen implements Screen {
 	}
 
 	private void presentReady () {
-
+		batcher.draw(Assets.ready, 160 - 192 / 2, 240 - 32 / 2, 192, 32);
 	}
 
 	private void presentRunning () {
-
+		batcher.draw(Assets.pause, 320 - 64, 480 - 64, 64, 64);
 	}
 
 	private void presentPaused () {
-
+		batcher.draw(Assets.pauseMenu, 160 - 192 / 2, 240 - 96 / 2, 192, 96);
+		//Assets.font.draw(batcher, scoreString, 16, 480 - 20);
 	}
 
 	private void presentLevelEnd () {
@@ -194,7 +230,7 @@ public class GameScreen implements Screen {
 	}
 
 	private void presentGameOver () {
-
+		batcher.draw(Assets.gameOver, 160 - 160 / 2, 240 - 96 / 2, 160, 96);
 	}
 
 	@Override

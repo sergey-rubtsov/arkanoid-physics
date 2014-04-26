@@ -20,19 +20,27 @@ import com.arkanoid.game.Assets;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.Matrix4;
 
-public class WorldRenderer {
+public class WorldRenderer implements Renderer {
+	
+	static final int CIRCLE_VERTICES = 10;	
+	
 	static final float FRUSTUM_WIDTH = 100;
 	static final float FRUSTUM_HEIGHT = 150;
-	GameField world;
+	GameField field;
 	OrthographicCamera cam;
 	SpriteBatch batch;
+	ShapeRenderer renderer;
 
-	public WorldRenderer (SpriteBatch batch, GameField world) {
-		this.world = world;
+	public WorldRenderer (SpriteBatch batch, GameField field) {
+		this.field = field;
 		this.cam = new OrthographicCamera(FRUSTUM_WIDTH, FRUSTUM_HEIGHT);
 		this.cam.position.set(FRUSTUM_WIDTH / 2, FRUSTUM_HEIGHT / 2, 0);
 		this.batch = batch;
+		renderer = new ShapeRenderer(500);
 	}
 
 	public void render() {
@@ -52,88 +60,69 @@ public class WorldRenderer {
 	}
 
 	public void renderObjects () {
-		batch.enableBlending();
-		batch.begin();
 		renderBall();
-		renderVaus();
-		batch.end();
+		renderVaus();	
 	}
 
 	private void renderVaus() {
-		TextureRegion vausFrame = Assets.defaultVaus;
-		batch.draw(vausFrame, world.vaus.position.x, world.vaus.position.y, Vaus.VAUS_WIDTH, Vaus.VAUS_HEIGHT);
-	
+		batch.enableBlending();
+		TextureRegion vausFrame = Assets.defaultVaus;		
+		batch.begin();
+		batch.draw(vausFrame, field.vaus.position.x, field.vaus.position.y, Vaus.VAUS_WIDTH, Vaus.VAUS_HEIGHT);
+		batch.end();	
 	}
 
 	private void renderBall() {
-		// TODO Auto-generated method stub
-		
+		begin();
+		Ball ball = this.field.getBall();
+		fillCircle(ball.getBody().getPosition().x, ball.getBody().getPosition().y, ball.getRadius(), 100, 100, 100);
+		end();
 	}
 
-	private void renderBob () {
-/*		TextureRegion keyFrame;
-		switch (world.bob.state) {
-		case Bob.BOB_STATE_FALL:
-			keyFrame = Assets.bobFall.getKeyFrame(world.bob.stateTime, Animation.ANIMATION_LOOPING);
-			break;
-		case Bob.BOB_STATE_JUMP:
-			keyFrame = Assets.bobJump.getKeyFrame(world.bob.stateTime, Animation.ANIMATION_LOOPING);
-			break;
-		case Bob.BOB_STATE_HIT:
-		default:
-			keyFrame = Assets.bobHit;
-		}
-
-		float side = world.bob.velocity.x < 0 ? -1 : 1;
-		if (side < 0)
-			batch.draw(keyFrame, world.bob.position.x + 0.5f, world.bob.position.y - 0.5f, side * 1, 1);
-		else
-			batch.draw(keyFrame, world.bob.position.x - 0.5f, world.bob.position.y - 0.5f, side * 1, 1);*/
+	public void begin () {
+		renderer.begin(ShapeType.Line);
 	}
 
-	private void renderPlatforms () {
-/*		int len = world.platforms.size();
-		for (int i = 0; i < len; i++) {
-			Platform platform = world.platforms.get(i);
-			TextureRegion keyFrame = Assets.platform;
-			if (platform.state == Platform.PLATFORM_STATE_PULVERIZING) {
-				keyFrame = Assets.brakingPlatform.getKeyFrame(platform.stateTime, Animation.ANIMATION_NONLOOPING);
-			}
-
-			batch.draw(keyFrame, platform.position.x - 1, platform.position.y - 0.25f, 2, 0.5f);
-		}*/
+	@Override
+	public void drawLine (float x1, float y1, float x2, float y2, int r, int g, int b) {
+		float fr = r / 255f;
+		float fg = g / 255f;
+		float fb = b / 255f;
+		renderer.setColor(fr, fg, fb, 1);
+		renderer.line(x1, y1, x2, y2);
 	}
 
-	private void renderItems () {
-/*		int len = world.springs.size();
-		for (int i = 0; i < len; i++) {
-			Spring spring = world.springs.get(i);
-			batch.draw(Assets.spring, spring.position.x - 0.5f, spring.position.y - 0.5f, 1, 1);
-		}
-
-		len = world.coins.size();
-		for (int i = 0; i < len; i++) {
-			Coin coin = world.coins.get(i);
-			TextureRegion keyFrame = Assets.coinAnim.getKeyFrame(coin.stateTime, Animation.ANIMATION_LOOPING);
-			batch.draw(keyFrame, coin.position.x - 0.5f, coin.position.y - 0.5f, 1, 1);
-		}*/
+	@Override
+	public void fillCircle (float cx, float cy, float radius, int r, int g, int b) {
+		end();
+		renderer.begin(ShapeType.Filled);
+		float fr = r / 255f;
+		float fg = g / 255f;
+		float fb = b / 255f;
+		renderer.setColor(fr, fg, fb, 1);
+		renderer.circle(cx, cy, radius, 20);
+		end();
+		begin();
 	}
 
-	private void renderSquirrels () {
-/*		int len = world.squirrels.size();
-		for (int i = 0; i < len; i++) {
-			Squirrel squirrel = world.squirrels.get(i);
-			TextureRegion keyFrame = Assets.squirrelFly.getKeyFrame(squirrel.stateTime, Animation.ANIMATION_LOOPING);
-			float side = squirrel.velocity.x < 0 ? -1 : 1;
-			if (side < 0)
-				batch.draw(keyFrame, squirrel.position.x + 0.5f, squirrel.position.y - 0.5f, side * 1, 1);
-			else
-				batch.draw(keyFrame, squirrel.position.x - 0.5f, squirrel.position.y - 0.5f, side * 1, 1);
-		}*/
+	@Override
+	public void frameCircle (float cx, float cy, float radius, int r, int g, int b) {
+		end();
+		renderer.begin(ShapeType.Line);
+		float fr = r / 255f;
+		float fg = g / 255f;
+		float fb = b / 255f;
+		renderer.setColor(fr, fg, fb, 1);
+		renderer.circle(cx, cy, radius, 20);
+		end();
+		begin();
 	}
 
-	private void renderCastle () {
-/*		Castle castle = world.castle;
-		batch.draw(Assets.castle, castle.position.x - 1, castle.position.y - 1, 2, 2);*/
+	public void end () {
+		renderer.end();
+	}
+
+	public void setProjectionMatrix (Matrix4 matrix) {
+		renderer.setProjectionMatrix(matrix);
 	}
 }

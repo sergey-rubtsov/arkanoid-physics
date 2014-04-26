@@ -9,11 +9,8 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
-/** Methods to create Box2D shapes.
- * @author brian */
-
-public class Box2DFactory {
-
+public class BodyFactory {
+	
 	/** Creates a circle object with the given position and radius. Resitution defaults to 0.6. */
 	public static Body createCircle (World world, float x, float y, float radius, boolean isStatic) {
 		CircleShape sd = new CircleShape();

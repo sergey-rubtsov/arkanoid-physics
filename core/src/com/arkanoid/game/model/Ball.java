@@ -1,16 +1,21 @@
 package com.arkanoid.game.model;
 
-public class Ball {
+import com.badlogic.gdx.physics.box2d.World;
+
+public class Ball extends PhysicalObject {
 	
-	public static final int BALL_RADIUS = 4;
-	public static final float BALL_SPEED = 3;
-	public static final int BONUS_SPEED = 2;
-
-	public Ball(float x, float y) {
-
+	private final float radius;
+	
+	public Ball(World world, float x, float y, float radius) {
+		this.radius = radius;
+		super.setBody(BodyFactory.createCircle(world, x, y, radius, false));
 	}
-	
+
 	public void update (float deltaTime) {
 		
+	}
+
+	public float getRadius() {
+		return radius;
 	}
 }

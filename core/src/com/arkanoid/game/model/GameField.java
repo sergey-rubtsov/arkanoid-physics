@@ -16,32 +16,29 @@
 
 package com.arkanoid.game.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
-import com.arkanoid.game.model.Ball;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.badlogic.gdx.physics.box2d.World;
 
 public class GameField implements ContactListener {
-	public interface WorldListener {
+	public static interface WorldListener {
 
-		public void gameStarted (GameField field);
+		public void gameStarted(GameField field);
 
-		public void ballLost (GameField field);
+		public void ballLost(GameField field);
 
-		public void gameEnded (GameField field);
+		public void gameEnded(GameField field);
 
-		public void tick (GameField field, long msecs);
+		public void tick(GameField field, long msecs);
 
 		//public void processCollision (GameField field, FieldElement element, Body hitBody, Body ball);
 
-		public void flipperActivated (GameField field);
+		public void vausMoved(GameField field);
 	}
 
 	public static final float WORLD_WIDTH = 100;
@@ -51,24 +48,46 @@ public class GameField implements ContactListener {
 	public static final int WORLD_STATE_GAME_OVER = 2;
 	public static final Vector2 gravity = new Vector2(0, -12);
 	
-	public final WorldListener listener;
+	WorldListener listener;
 	public final Random rand;
 
-	public float heightSoFar;
-	public int score;
 	public int state;
 	
+	private World world;
+	
+	long gameTime;
+	
 	public final Vaus vaus;
-	public final Ball ball;
+	private Ball ball;
 
-	public GameField(WorldListener listener) {		
+	public GameField(WorldListener listener) {
+		generateWorld();
 		this.vaus = new Vaus(WORLD_WIDTH / 2 - (Vaus.VAUS_WIDTH / 2), 10 - Vaus.VAUS_HEIGHT / 2);
-		this.ball = new Ball(WORLD_WIDTH / 2 - (Vaus.VAUS_WIDTH / 2), 10 - Ball.BALL_RADIUS);
+		this.setBall(new Ball(world, 200, 100, 10));
 		this.listener = listener;
-		rand = new Random();
-		generateLevel();
+		rand = new Random();		
 
 		this.state = WORLD_STATE_RUNNING;
+	}
+	
+	public void tick(long msecs, int iters) {
+		float dt = (msecs / 1000.0f) / iters;
+
+		for (int i = 0; i < iters; i++) {
+			//clearBallContacts();
+			world.step(dt, 10, 10);
+			//processBallContacts();
+		}
+
+		gameTime += msecs;
+		//processElementTicks();
+		//processScheduledActions();
+
+		getWorldListener().tick(this, msecs);
+	}
+	
+	public WorldListener getWorldListener() {
+		return listener;
 	}
 	
 	@Override
@@ -95,11 +114,14 @@ public class GameField implements ContactListener {
 		
 	}
 
-	private void generateLevel() {
-
+	private void generateWorld() {
+		Vector2 gravity = new Vector2(0.0f, -1.0f);
+		boolean doSleep = true;
+		world = new World(gravity, doSleep);
+		world.setContactListener(this);
 	}
 
-	public void update (float deltaTime, float vausMoveX, float accelX, float accelY) {
+	public void update(float deltaTime, float vausMoveX, float accelX, float accelY) {
 		updateBall(deltaTime, accelX, accelY);
 		updateVaus(deltaTime, vausMoveX);
 		checkGameOver();
@@ -189,6 +211,16 @@ public class GameField implements ContactListener {
 			state = WORLD_STATE_GAME_OVER;
 		}*/
 	}
+
+	public Ball getBall() {
+		return ball;
+	}
+
+	public void setBall(Ball ball) {
+		this.ball = ball;
+	}
+	
+	
 
 
 }

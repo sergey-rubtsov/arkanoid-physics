@@ -4,7 +4,6 @@ import com.arkanoid.game.view.MainMenuScreen;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.FPSLogger;
 
-
 public class Arkanoid extends Game {
 
 	boolean firstTimeCreate = true;

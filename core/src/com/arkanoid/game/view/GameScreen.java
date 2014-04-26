@@ -31,7 +31,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
-
 public class GameScreen implements Screen {
 	static final int GAME_READY = 0;
 	static final int GAME_RUNNING = 1;
@@ -81,11 +80,11 @@ public class GameScreen implements Screen {
 
 			@Override
 			public void tick(GameField field, long msecs) {
-				Assets.playSound(Assets.hitSound);
+				//Assets.playSound(Assets.hitSound);
 			}
 
 			@Override
-			public void flipperActivated(GameField field) {
+			public void vausMoved(GameField field) {
 				Assets.playSound(Assets.hitSound);
 			}		
 		};
@@ -207,6 +206,7 @@ public class GameScreen implements Screen {
 
 	public void draw () {
 		GL20 gl = Gdx.gl;
+		field.tick((long)(Gdx.graphics.getDeltaTime() * 3000), 4);
 		gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		renderer.render();

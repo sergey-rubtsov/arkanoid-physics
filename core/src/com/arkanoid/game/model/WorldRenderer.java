@@ -24,11 +24,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class WorldRenderer {
 	static final float FRUSTUM_WIDTH = 100;
 	static final float FRUSTUM_HEIGHT = 150;
-	World world;
+	GameField world;
 	OrthographicCamera cam;
 	SpriteBatch batch;
 
-	public WorldRenderer (SpriteBatch batch, World world) {
+	public WorldRenderer (SpriteBatch batch, GameField world) {
 		this.world = world;
 		this.cam = new OrthographicCamera(FRUSTUM_WIDTH, FRUSTUM_HEIGHT);
 		this.cam.position.set(FRUSTUM_WIDTH / 2, FRUSTUM_HEIGHT / 2, 0);
@@ -61,9 +61,8 @@ public class WorldRenderer {
 
 	private void renderVaus() {
 		TextureRegion vausFrame = Assets.defaultVaus;
-		batch.draw(vausFrame, FRUSTUM_WIDTH / 2, 1, 20, 5);
-		//batch.draw(vaus, x, y, width, height);
-		
+		batch.draw(vausFrame, world.vaus.position.x, world.vaus.position.y, Vaus.VAUS_WIDTH, Vaus.VAUS_HEIGHT);
+	
 	}
 
 	private void renderBall() {

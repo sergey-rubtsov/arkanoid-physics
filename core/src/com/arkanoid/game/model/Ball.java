@@ -1,30 +1,16 @@
 package com.arkanoid.game.model;
 
-import com.arkanoid.game.implementation.Constants;
+public class Ball {
+	
+	public static final int BALL_RADIUS = 4;
+	public static final float BALL_SPEED = 3;
+	public static final int BONUS_SPEED = 2;
 
-/**
- * This class contains information about a ball.
- * 
- */
-
-public class Ball implements Constants {
-	protected float x;
-	protected float y;
-	protected float speedX;
-	protected float speedY;
-	protected float speed;
-
-	public Ball() {
+	public Ball(float x, float y) {
 
 	}
-
-	/**
-	 * For test purposes only
-	 * 
-	 * @return
-	 */
-	public final String toStringTest() {
-		return x + " " + y + " " + speedX + " " + speedY;
+	
+	public void update (float deltaTime) {
+		
 	}
-
 }

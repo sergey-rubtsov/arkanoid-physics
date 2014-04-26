@@ -1,77 +1,38 @@
 package com.arkanoid.game.model;
 
-import com.arkanoid.game.implementation.Constants;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 
-public class Vaus implements Constants {
-	protected int posX;
-	private int moveLeft;
-	private int moveRight;
-	protected int vausWidth;
-
-	public Vaus(int posX) {
-		this.posX = posX;
-		vausWidth = VAUS_WIDTH;
-	}
+public class Vaus {
 	
-	public Vaus() {
-		this.posX = 0;
-		vausWidth = VAUS_WIDTH;		
+	public final Vector2 position;
+	public final Rectangle bounds;
+	public final Vector2 velocity;
+	public final Vector2 accel;
+
+	static final int VAUS_HEIGHT = 5;
+	static final int VAUS_WIDTH = 20;
+	public static final float VAUS_VELOCITY = 5f;
+	
+	public Vaus(float x, float y) {
+		this.position = new Vector2(x, y);
+		this.bounds = new Rectangle(x - VAUS_WIDTH / 2, y - VAUS_HEIGHT / 2, VAUS_WIDTH, VAUS_HEIGHT);
+		velocity = new Vector2();
+		accel = new Vector2();
 	}
 
-	// getters and setters
-	public final void setX(final int posX) {
-		this.posX = posX;
-	}
-
-
-	public final int getX() {
-		return posX;
-	}
-
-	public final void setWidth(final int width) {
-		vausWidth = width;
-	}
-
-	public final int getWidth() {
-		return vausWidth;
-	}
-
-	/**
-	 * Move the Vaus of a specified delta
-	 * 
-	 * @param deltaX
-	 */
-	public final void move(final int delta) {
-		setX(posX + delta);
-	}
-
-	/**
-	 * Move the Vaus based on the moveX field
-	 */
-	public void move() {
-		setX(posX + moveRight * VAUS_SPEED - moveLeft * VAUS_SPEED);
-		if (posX <= 5) {
-			setX(5);
+	public void update(float deltaTime, float vausMoveX) {
+		
+		if (position.x <= 0) {
+			position.x = position.x + 0.1f;
+			return;
 		}
-		if (posX + getWidth() + 5 >= GAME_WIDTH) {
-			setX(GAME_WIDTH - getWidth() - 5);
-		}
-	}
-
-	public final void moveLeft() {
-		moveLeft = 1;
-	}
-
-	public final void moveRight() {
-		moveRight = 1;
-	}
-
-	public final void stopLeft() {
-		moveLeft = 0;
-	}
-
-	public final void stopRight() {
-		moveRight = 0;
-	}
-
+		if (position.x >= GameField.WORLD_WIDTH - VAUS_WIDTH) {
+			position.x = position.x - 0.1f;
+			return;
+		}		
+		position.add(vausMoveX * deltaTime * 3, 0);
+		bounds.x = position.x - bounds.width / 2;
+		bounds.y = position.y - bounds.height / 2;		
+	}	
 }

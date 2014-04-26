@@ -8,8 +8,8 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.title = "Arkanoid";
-		config.width = 480;
-		config.height = 800;
+		config.width = 320;
+		config.height = 534;
 		new LwjglApplication(new Arkanoid(), config);
 	}
 }

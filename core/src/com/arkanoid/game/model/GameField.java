@@ -22,17 +22,30 @@ import java.util.Random;
 
 import com.arkanoid.game.model.Ball;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Manifold;
 
-public class World {
+public class GameField implements ContactListener {
 	public interface WorldListener {
 
-		public void hit();
+		public void gameStarted (GameField field);
 
-		public void bonus();
+		public void ballLost (GameField field);
+
+		public void gameEnded (GameField field);
+
+		public void tick (GameField field, long msecs);
+
+		//public void processCollision (GameField field, FieldElement element, Body hitBody, Body ball);
+
+		public void flipperActivated (GameField field);
 	}
 
-	public static final float WORLD_WIDTH = 10;
-	public static final float WORLD_HEIGHT = 15 * 20;
+	public static final float WORLD_WIDTH = 100;
+	public static final float WORLD_HEIGHT = 150;
 	public static final int WORLD_STATE_RUNNING = 0;
 	public static final int WORLD_STATE_NEXT_LEVEL = 1;
 	public static final int WORLD_STATE_GAME_OVER = 2;
@@ -48,39 +61,59 @@ public class World {
 	public final Vaus vaus;
 	public final Ball ball;
 
-	public World(WorldListener listener) {		
-		this.vaus = new Vaus();
-		this.ball = new Ball();
+	public GameField(WorldListener listener) {		
+		this.vaus = new Vaus(WORLD_WIDTH / 2 - (Vaus.VAUS_WIDTH / 2), 10 - Vaus.VAUS_HEIGHT / 2);
+		this.ball = new Ball(WORLD_WIDTH / 2 - (Vaus.VAUS_WIDTH / 2), 10 - Ball.BALL_RADIUS);
 		this.listener = listener;
 		rand = new Random();
 		generateLevel();
 
 		this.state = WORLD_STATE_RUNNING;
 	}
+	
+	@Override
+	public void beginContact(Contact contact) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void endContact(Contact contact) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void preSolve(Contact contact, Manifold oldManifold) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void postSolve(Contact contact, ContactImpulse impulse) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	private void generateLevel() {
 
 	}
 
-	public void update (float deltaTime, float accelX) {
-		updateBreaks(deltaTime);
-		updateBall(deltaTime, accelX);
-		updateVaus(deltaTime);
+	public void update (float deltaTime, float vausMoveX, float accelX, float accelY) {
+		updateBall(deltaTime, accelX, accelY);
+		updateVaus(deltaTime, vausMoveX);
 		checkGameOver();
 	}
 
-	private void updateVaus(float deltaTime) {
-		// TODO Auto-generated method stub
-		
+	private void updateVaus(float deltaTime, float vausMoveX) {
+		vaus.update(deltaTime, vausMoveX);
 	}
 
-	private void updateBall(float deltaTime, float accelX) {
-		// TODO Auto-generated method stub
+	private void updateBall(float deltaTime, float accelX, float accelY) {
 		
 	}
 
 	private void updateBreaks(float deltaTime) {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -106,15 +139,18 @@ public class World {
 	private void checkCollisions () {
 		checkVausCollisions();
 		checkBrickCollisions();
+		checkBallCollisions();
 	}
 
-	private void checkBrickCollisions() {
-		// TODO Auto-generated method stub
+	private void checkBallCollisions() {		
 		
 	}
 
+	private void checkBrickCollisions() {
+	
+	}
+
 	private void checkVausCollisions() {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -153,4 +189,6 @@ public class World {
 			state = WORLD_STATE_GAME_OVER;
 		}*/
 	}
+
+
 }

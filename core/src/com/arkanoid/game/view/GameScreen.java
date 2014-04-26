@@ -17,8 +17,8 @@
 package com.arkanoid.game.view;
 
 import com.arkanoid.game.Assets;
-import com.arkanoid.game.model.World.WorldListener;
-import com.arkanoid.game.model.World;
+import com.arkanoid.game.model.GameField.WorldListener;
+import com.arkanoid.game.model.GameField;
 import com.arkanoid.game.model.WorldRenderer;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Input.Keys;
@@ -45,7 +45,7 @@ public class GameScreen implements Screen {
 	OrthographicCamera guiCam;
 	Vector3 touchPoint;
 	SpriteBatch batcher;
-	World world;
+	GameField field;
 	WorldListener worldListener;
 	WorldRenderer renderer;
 	
@@ -65,18 +65,32 @@ public class GameScreen implements Screen {
 		batcher = new SpriteBatch();
 		worldListener = new WorldListener() {
 			@Override
-			public void hit() {
+			public void gameStarted(GameField field) {
 				Assets.playSound(Assets.hitSound);				
 			}
 
 			@Override
-			public void bonus() {
-				Assets.playSound(Assets.hitSound);				
+			public void ballLost(GameField field) {
+				Assets.playSound(Assets.hitSound);
+			}
+
+			@Override
+			public void gameEnded(GameField field) {
+				Assets.playSound(Assets.hitSound);
+			}
+
+			@Override
+			public void tick(GameField field, long msecs) {
+				Assets.playSound(Assets.hitSound);
+			}
+
+			@Override
+			public void flipperActivated(GameField field) {
+				Assets.playSound(Assets.hitSound);
 			}		
-		
 		};
-		world = new World(worldListener);
-		renderer = new WorldRenderer(batcher, world);
+		field = new GameField(worldListener);
+		renderer = new WorldRenderer(batcher, field);
 		pauseBounds = new Rectangle(320 - 64, 480 - 64, 64, 64);
 		resumeBounds = new Rectangle(160 - 96, 240, 192, 36);
 		quitBounds = new Rectangle(160 - 96, 240 - 36, 192, 36);
@@ -126,21 +140,28 @@ public class GameScreen implements Screen {
 		
 		// should work also with Gdx.input.isPeripheralAvailable(Peripheral.Accelerometer)
 		if (appType == ApplicationType.Android || appType == ApplicationType.iOS) {
-			world.update(deltaTime, Gdx.input.getAccelerometerX());
+			//TODO have to implement vausMoveX functionality
+			field.update(deltaTime, 0f, Gdx.input.getAccelerometerX(), Gdx.input.getAccelerometerY());
 		} else {
-			float accel = 0;
-			if (Gdx.input.isKeyPressed(Keys.DPAD_LEFT)) accel = 5f;
-			if (Gdx.input.isKeyPressed(Keys.DPAD_RIGHT)) accel = -5f;
-			world.update(deltaTime, accel);
+			float moveX = 0;
+			if (Gdx.input.isKeyPressed(Keys.DPAD_LEFT)) moveX = -30f;
+			if (Gdx.input.isKeyPressed(Keys.DPAD_RIGHT)) moveX = 30f;
+			float accelX = 0;
+			float accelY = 0;
+			if (Gdx.input.isKeyPressed(Keys.A)) accelX = 5f;
+			if (Gdx.input.isKeyPressed(Keys.D)) accelX = -5f;
+			if (Gdx.input.isKeyPressed(Keys.W)) accelY = 5f;
+			if (Gdx.input.isKeyPressed(Keys.S)) accelY = -5f;
+			field.update(deltaTime, moveX, accelX, accelY);
 		}
 /*		if (world.score != lastScore) {
 			lastScore = world.score;
 			scoreString = "SCORE: " + lastScore;
 		}*/
-		if (world.state == World.WORLD_STATE_NEXT_LEVEL) {
+		if (field.state == GameField.WORLD_STATE_NEXT_LEVEL) {
 			state = GAME_LEVEL_END;
 		}
-		if (world.state == World.WORLD_STATE_GAME_OVER) {
+		if (field.state == GameField.WORLD_STATE_GAME_OVER) {
 			state = GAME_OVER;
 /*			if (lastScore >= Settings.highscores[4])
 				scoreString = "NEW HIGHSCORE: " + lastScore;
@@ -172,8 +193,8 @@ public class GameScreen implements Screen {
 
 	private void updateLevelEnd () {
 		if (Gdx.input.justTouched()) {
-			world = new World(worldListener);
-			renderer = new WorldRenderer(batcher, world);
+			field = new GameField(worldListener);
+			renderer = new WorldRenderer(batcher, field);
 			state = GAME_READY;
 		}
 	}
@@ -255,7 +276,8 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void pause () {
-		if (state == GAME_RUNNING) state = GAME_PAUSED;
+		//commented for testing
+		//if (state == GAME_RUNNING) state = GAME_PAUSED;
 	}
 
 	@Override

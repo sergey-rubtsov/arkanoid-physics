@@ -11,10 +11,6 @@ public class Ball extends PhysicalObject {
 		super.setBody(BodyFactory.createCircle(world, x, y, radius, false));
 	}
 
-	public void update (float deltaTime) {
-		
-	}
-
 	public float getRadius() {
 		return radius;
 	}

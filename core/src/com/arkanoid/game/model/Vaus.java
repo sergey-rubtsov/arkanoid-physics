@@ -1,38 +1,21 @@
 package com.arkanoid.game.model;
 
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
 
-public class Vaus {
+public class Vaus extends PhysicalObject {
 	
-	public final Vector2 position;
-	public final Rectangle bounds;
-	public final Vector2 velocity;
-	public final Vector2 accel;
+	public final Rectangle rectangle;
 
-	static final int VAUS_HEIGHT = 5;
-	static final int VAUS_WIDTH = 20;
-	public static final float VAUS_VELOCITY = 5f;
+	static final float VAUS_HEIGHT = 5;
+	static final float VAUS_WIDTH = 20;
 	
-	public Vaus(float x, float y) {
-		this.position = new Vector2(x, y);
-		this.bounds = new Rectangle(x - VAUS_WIDTH / 2, y - VAUS_HEIGHT / 2, VAUS_WIDTH, VAUS_HEIGHT);
-		velocity = new Vector2();
-		accel = new Vector2();
+	public Vaus(World world, float x, float y) {
+		this.rectangle = new Rectangle(x - VAUS_WIDTH / 2, y - VAUS_HEIGHT / 2, VAUS_WIDTH, VAUS_HEIGHT);
+		super.setBody(BodyFactory.createRectangle(world, x, y, VAUS_WIDTH, VAUS_HEIGHT));
 	}
-
-	public void update(float deltaTime, float vausMoveX) {
-		
-		if (position.x <= 0) {
-			position.x = position.x + 0.1f;
-			return;
-		}
-		if (position.x >= GameField.WORLD_WIDTH - VAUS_WIDTH) {
-			position.x = position.x - 0.1f;
-			return;
-		}		
-		position.add(vausMoveX * deltaTime * 3, 0);
-		bounds.x = position.x - bounds.width / 2;
-		bounds.y = position.y - bounds.height / 2;		
-	}	
+	
+	public Rectangle getRectangle() {
+		return rectangle;
+	}
 }

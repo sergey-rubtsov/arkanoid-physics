@@ -77,4 +77,9 @@ public class BodyFactory {
 		return createWall(world, cx - mag / 2, cy - 0.05f, cx + mag / 2, cy + 0.05f, angle, restitution);
 	}
 
+	public static Body createRectangle(World world, float x, float y, float width, float height) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

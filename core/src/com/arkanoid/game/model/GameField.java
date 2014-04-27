@@ -18,6 +18,7 @@ package com.arkanoid.game.model;
 
 import java.util.Random;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -41,12 +42,16 @@ public class GameField implements ContactListener {
 		public void vausMoved(GameField field);
 	}
 
-	public static final float WORLD_WIDTH = 100;
-	public static final float WORLD_HEIGHT = 150;
+	public static final int WORLD_WIDTH = Gdx.graphics.getWidth();
+	public static final int WORLD_HEIGHT = Gdx.graphics.getHeight();
+	public static final int VAUS_WIDTH = WORLD_WIDTH / 5;
+	public static final int VAUS_HEIGHT = WORLD_HEIGHT / 50;
+	public static final int BALL_RADIUS = WORLD_WIDTH / 50;
+	
 	public static final int WORLD_STATE_RUNNING = 0;
 	public static final int WORLD_STATE_NEXT_LEVEL = 1;
 	public static final int WORLD_STATE_GAME_OVER = 2;
-	public static final Vector2 gravity = new Vector2(0, -12);
+	public static final Vector2 gravity = new Vector2(0, -20);
 	
 	WorldListener listener;
 	public final Random rand;
@@ -62,9 +67,8 @@ public class GameField implements ContactListener {
 
 	public GameField(WorldListener listener) {
 		generateWorld();
-		//this.vaus = new Vaus(WORLD_WIDTH / 2 - (Vaus.VAUS_WIDTH / 2), 10 - Vaus.VAUS_HEIGHT / 2);
-		this.vaus = new Vaus(world, 200, 150);
-		this.ball = new Ball(world, 200, 100, 10);
+		this.vaus = new Vaus(world, WORLD_WIDTH / 2, 50, VAUS_WIDTH, VAUS_HEIGHT);
+		this.ball = new Ball(world, WORLD_WIDTH / 2, 300, BALL_RADIUS);
 		this.listener = listener;
 		rand = new Random();		
 
@@ -72,7 +76,6 @@ public class GameField implements ContactListener {
 	}
 	
 	private void generateWorld() {
-		Vector2 gravity = new Vector2(0.0f, -1.0f);
 		boolean doSleep = true;
 		world = new World(gravity, doSleep);
 		world.setContactListener(this);
@@ -121,90 +124,13 @@ public class GameField implements ContactListener {
 		// TODO Auto-generated method stub
 		
 	}
-
-	public void update(float deltaTime, float vausMoveX, float accelX, float accelY) {
-		updateBall(deltaTime, accelX, accelY);
-		updateVaus(deltaTime, vausMoveX);
-		checkGameOver();
-	}
-
-	private void updateVaus(float deltaTime, float vausMoveX) {
-		//vaus.update(deltaTime, vausMoveX);
-	}
-
-	private void updateBall(float deltaTime, float accelX, float accelY) {
-		
-	}
-
-	private void updateBreaks(float deltaTime) {
-		
-	}
-
-	private void updateBob (float deltaTime, float accelX) {
-/*		if (bob.state != Bob.BOB_STATE_HIT && bob.position.y <= 0.5f) bob.hitPlatform();
-		if (bob.state != Bob.BOB_STATE_HIT) bob.velocity.x = -accelX / 10 * Bob.BOB_MOVE_VELOCITY;
-		bob.update(deltaTime);
-		heightSoFar = Math.max(bob.position.y, heightSoFar);*/
-	}
-
-	private void updatePlatforms (float deltaTime) {
-/*		int len = platforms.size();
-		for (int i = 0; i < len; i++) {
-			Platform platform = platforms.get(i);
-			platform.update(deltaTime);
-			if (platform.state == Platform.PLATFORM_STATE_PULVERIZING && platform.stateTime > Platform.PLATFORM_PULVERIZE_TIME) {
-				platforms.remove(platform);
-				len = platforms.size();
-			}
-		}*/
-	}
-
-	private void checkCollisions () {
-		checkVausCollisions();
-		checkBrickCollisions();
-		checkBallCollisions();
-	}
-
-	private void checkBallCollisions() {		
-		
-	}
-
-	private void checkBrickCollisions() {
 	
+	public void vausMove(float deltaX) {
+		this.vaus.getBody().setLinearVelocity(new Vector2(deltaX, 0));
 	}
-
-	private void checkVausCollisions() {
-		
-	}
-
-	private void checkPlatformCollisions () {
-/*		if (bob.velocity.y > 0) return;
-
-		int len = platforms.size();
-		for (int i = 0; i < len; i++) {
-			Platform platform = platforms.get(i);
-			if (bob.position.y > platform.position.y) {
-				if (bob.bounds.overlaps(platform.bounds)) {
-					bob.hitPlatform();
-					listener.jump();
-					if (rand.nextFloat() > 0.5f) {
-						platform.pulverize();
-					}
-					break;
-				}
-			}
-		}*/
-	}
-
-	private void checkSquirrelCollisions () {
-/*		int len = squirrels.size();
-		for (int i = 0; i < len; i++) {
-			Squirrel squirrel = squirrels.get(i);
-			if (squirrel.bounds.overlaps(bob.bounds)) {
-				bob.hitSquirrel();
-				listener.hit();
-			}
-		}*/
+	
+	public void changeGravity(float accelX, float accelY) {
+		this.world.setGravity(new Vector2(accelX, accelY));
 	}
 
 	private void checkGameOver () {

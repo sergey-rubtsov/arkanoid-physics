@@ -19,14 +19,12 @@ package com.arkanoid.game.model;
 import com.arkanoid.game.Assets;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Rectangle;
 
 public class WorldRenderer implements Renderer {
-	
-	static final int CIRCLE_VERTICES = 10;	
 	
 	static final float FRUSTUM_WIDTH = 100;
 	static final float FRUSTUM_HEIGHT = 150;
@@ -44,7 +42,6 @@ public class WorldRenderer implements Renderer {
 	}
 
 	public void render() {
-		//if (world.bob.position.y > cam.position.y) cam.position.y = world.bob.position.y;
 		cam.update();
 		batch.setProjectionMatrix(cam.combined);
 		renderBackground();
@@ -65,12 +62,31 @@ public class WorldRenderer implements Renderer {
 	}
 
 	private void renderVaus() {
-		batch.enableBlending();
-		TextureRegion vausFrame = Assets.defaultVaus;		
-		batch.begin();
-		Vaus vaus = this.field.getVaus();		
-		batch.draw(vausFrame, vaus.getXPos(), vaus.getYPos(), Vaus.VAUS_WIDTH, Vaus.VAUS_HEIGHT);
-		batch.end();	
+		//batch.enableBlending();
+		//TextureRegion vausFrame = Assets.defaultVaus;		
+		//batch.begin();
+		begin();
+		Vaus vaus = this.field.getVaus();
+		fillRectangle(vaus.getRectangle());
+		end();
+		//batch.draw(vausFrame, vaus.getXPos(), vaus.getYPos(), Vaus.VAUS_WIDTH, Vaus.VAUS_HEIGHT);
+		//batch.end();	
+	}
+
+	private void fillRectangle(Rectangle rectangle) {
+		fillRectangle(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+	}
+	
+	public void fillRectangle(float x, float y, float width, float height) {
+		end();
+		renderer.begin(ShapeType.Filled);
+		float fr = 255 / 255f;
+		float fg = 50 / 255f;
+		float fb = 50 / 255f;
+		renderer.setColor(fr, fg, fb, 1);
+		renderer.rect(x, y, width, height);
+		end();
+		begin();
 	}
 
 	private void renderBall() {
@@ -83,6 +99,12 @@ public class WorldRenderer implements Renderer {
 	public void begin () {
 		renderer.begin(ShapeType.Line);
 	}
+	
+	public void end () {
+		renderer.end();
+	}
+	
+
 
 	@Override
 	public void drawLine (float x1, float y1, float x2, float y2, int r, int g, int b) {
@@ -117,10 +139,6 @@ public class WorldRenderer implements Renderer {
 		renderer.circle(cx, cy, radius, 20);
 		end();
 		begin();
-	}
-
-	public void end () {
-		renderer.end();
 	}
 
 	public void setProjectionMatrix (Matrix4 matrix) {

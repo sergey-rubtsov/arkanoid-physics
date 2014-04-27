@@ -139,19 +139,19 @@ public class GameScreen implements Screen {
 		
 		// should work also with Gdx.input.isPeripheralAvailable(Peripheral.Accelerometer)
 		if (appType == ApplicationType.Android || appType == ApplicationType.iOS) {
-			//TODO have to implement vausMoveX functionality
-			field.update(deltaTime, 0f, Gdx.input.getAccelerometerX(), Gdx.input.getAccelerometerY());
+			field.changeGravity(Gdx.input.getAccelerometerX(), Gdx.input.getAccelerometerY());
 		} else {
 			float moveX = 0;
-			if (Gdx.input.isKeyPressed(Keys.DPAD_LEFT)) moveX = -30f;
-			if (Gdx.input.isKeyPressed(Keys.DPAD_RIGHT)) moveX = 30f;
+			if (Gdx.input.isKeyPressed(Keys.DPAD_LEFT)) moveX = -50f;
+			if (Gdx.input.isKeyPressed(Keys.DPAD_RIGHT)) moveX = 50f;
 			float accelX = 0;
 			float accelY = 0;
 			if (Gdx.input.isKeyPressed(Keys.A)) accelX = 5f;
 			if (Gdx.input.isKeyPressed(Keys.D)) accelX = -5f;
 			if (Gdx.input.isKeyPressed(Keys.W)) accelY = 5f;
 			if (Gdx.input.isKeyPressed(Keys.S)) accelY = -5f;
-			field.update(deltaTime, moveX, accelX, accelY);
+			field.vausMove(moveX);			
+			field.changeGravity(accelX, accelY);
 		}
 /*		if (world.score != lastScore) {
 			lastScore = world.score;
@@ -219,9 +219,12 @@ public class GameScreen implements Screen {
 		case GAME_READY:
 			presentReady();
 			break;
-		case GAME_RUNNING:
+		case GAME_RUNNING: {
+			//field.tick((long)(Gdx.graphics.getDeltaTime() * 3000), 4);
 			presentRunning();
 			break;
+		}
+			
 		case GAME_PAUSED:
 			presentPaused();
 			break;
@@ -276,8 +279,7 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void pause () {
-		//commented for testing
-		//if (state == GAME_RUNNING) state = GAME_PAUSED;
+		if (state == GAME_RUNNING) state = GAME_PAUSED;
 	}
 
 	@Override

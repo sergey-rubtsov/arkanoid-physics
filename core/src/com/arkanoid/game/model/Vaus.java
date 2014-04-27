@@ -6,16 +6,15 @@ import com.badlogic.gdx.physics.box2d.World;
 public class Vaus extends PhysicalObject {
 	
 	public final Rectangle rectangle;
-
-	static final float VAUS_HEIGHT = 5;
-	static final float VAUS_WIDTH = 20;
 	
-	public Vaus(World world, float x, float y) {
-		this.rectangle = new Rectangle(x - VAUS_WIDTH / 2, y - VAUS_HEIGHT / 2, VAUS_WIDTH, VAUS_HEIGHT);
-		super.setBody(BodyFactory.createKinematicRectangle(world, x, y, VAUS_WIDTH, VAUS_HEIGHT));
+	public Vaus(World world, float x, float y, float width, float height) {
+		this.rectangle = new Rectangle(x - width / 2, y - height / 2, width, height);
+		super.setBody(BodyFactory.createKinematicRectangle(world, x, y, width, height));
 	}
 	
 	public Rectangle getRectangle() {
+		rectangle.x = super.getXPos();
+		rectangle.y = super.getYPos();
 		return rectangle;
 	}
 }

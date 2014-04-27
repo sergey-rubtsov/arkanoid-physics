@@ -65,6 +65,28 @@ public class BodyFactory {
 		wall.createFixture(fdef);
 		wall.setType(BodyDef.BodyType.StaticBody);
 		return wall;
+	}	
+
+	public static Body createKinematicRectangle(World world, float x, float y, float width, float height) {
+		return createRectangle(world, x, y, width, height, BodyDef.BodyType.KinematicBody);
+	}
+	
+	public static Body createRectangle(World world, float x, float y, float width, float height, BodyDef.BodyType type) {
+		PolygonShape wallshape = new PolygonShape();
+		wallshape.setAsBox(width / 2, height / 2, new Vector2(x, y), 0);
+
+		FixtureDef fdef = new FixtureDef();
+		fdef.shape = wallshape;
+		fdef.density = 1.0f;
+		fdef.restitution = 0.6f;
+		
+		BodyDef bd = new BodyDef();
+		bd.position.set(x, y);
+		
+		Body rectangle = world.createBody(bd);
+		rectangle.createFixture(fdef);
+		rectangle.setType(type);
+		return rectangle;
 	}
 
 	/** Creates a segment-like thin wall with 0.05 thickness going from (x1,y1) to (x2,y2) */
@@ -76,10 +98,4 @@ public class BodyFactory {
 		float mag = (float)Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 		return createWall(world, cx - mag / 2, cy - 0.05f, cx + mag / 2, cy + 0.05f, angle, restitution);
 	}
-
-	public static Body createRectangle(World world, float x, float y, float width, float height) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

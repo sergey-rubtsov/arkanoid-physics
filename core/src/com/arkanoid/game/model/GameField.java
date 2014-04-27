@@ -57,17 +57,25 @@ public class GameField implements ContactListener {
 	
 	long gameTime;
 	
-	public final Vaus vaus;
-	private Ball ball;
+	private final Vaus vaus;
+	private final Ball ball;
 
 	public GameField(WorldListener listener) {
 		generateWorld();
-		this.vaus = new Vaus(WORLD_WIDTH / 2 - (Vaus.VAUS_WIDTH / 2), 10 - Vaus.VAUS_HEIGHT / 2);
-		this.setBall(new Ball(world, 200, 100, 10));
+		//this.vaus = new Vaus(WORLD_WIDTH / 2 - (Vaus.VAUS_WIDTH / 2), 10 - Vaus.VAUS_HEIGHT / 2);
+		this.vaus = new Vaus(world, 200, 150);
+		this.ball = new Ball(world, 200, 100, 10);
 		this.listener = listener;
 		rand = new Random();		
 
 		this.state = WORLD_STATE_RUNNING;
+	}
+	
+	private void generateWorld() {
+		Vector2 gravity = new Vector2(0.0f, -1.0f);
+		boolean doSleep = true;
+		world = new World(gravity, doSleep);
+		world.setContactListener(this);
 	}
 	
 	public void tick(long msecs, int iters) {
@@ -114,13 +122,6 @@ public class GameField implements ContactListener {
 		
 	}
 
-	private void generateWorld() {
-		Vector2 gravity = new Vector2(0.0f, -1.0f);
-		boolean doSleep = true;
-		world = new World(gravity, doSleep);
-		world.setContactListener(this);
-	}
-
 	public void update(float deltaTime, float vausMoveX, float accelX, float accelY) {
 		updateBall(deltaTime, accelX, accelY);
 		updateVaus(deltaTime, vausMoveX);
@@ -128,7 +129,7 @@ public class GameField implements ContactListener {
 	}
 
 	private void updateVaus(float deltaTime, float vausMoveX) {
-		vaus.update(deltaTime, vausMoveX);
+		//vaus.update(deltaTime, vausMoveX);
 	}
 
 	private void updateBall(float deltaTime, float accelX, float accelY) {
@@ -216,11 +217,8 @@ public class GameField implements ContactListener {
 		return ball;
 	}
 
-	public void setBall(Ball ball) {
-		this.ball = ball;
+	public Vaus getVaus() {
+		return vaus;
 	}
-	
-	
-
 
 }

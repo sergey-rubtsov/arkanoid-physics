@@ -12,7 +12,7 @@ public class Vaus extends PhysicalObject {
 	
 	public Vaus(World world, float x, float y) {
 		this.rectangle = new Rectangle(x - VAUS_WIDTH / 2, y - VAUS_HEIGHT / 2, VAUS_WIDTH, VAUS_HEIGHT);
-		super.setBody(BodyFactory.createRectangle(world, x, y, VAUS_WIDTH, VAUS_HEIGHT));
+		super.setBody(BodyFactory.createKinematicRectangle(world, x, y, VAUS_WIDTH, VAUS_HEIGHT));
 	}
 	
 	public Rectangle getRectangle() {

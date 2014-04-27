@@ -68,14 +68,15 @@ public class WorldRenderer implements Renderer {
 		batch.enableBlending();
 		TextureRegion vausFrame = Assets.defaultVaus;		
 		batch.begin();
-		batch.draw(vausFrame, field.vaus.position.x, field.vaus.position.y, Vaus.VAUS_WIDTH, Vaus.VAUS_HEIGHT);
+		Vaus vaus = this.field.getVaus();		
+		batch.draw(vausFrame, vaus.getXPos(), vaus.getYPos(), Vaus.VAUS_WIDTH, Vaus.VAUS_HEIGHT);
 		batch.end();	
 	}
 
 	private void renderBall() {
 		begin();
 		Ball ball = this.field.getBall();
-		fillCircle(ball.getBody().getPosition().x, ball.getBody().getPosition().y, ball.getRadius(), 100, 100, 100);
+		fillCircle(ball.getXPos(), ball.getYPos(), ball.getRadius(), 100, 100, 100);
 		end();
 	}
 

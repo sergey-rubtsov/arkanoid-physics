@@ -23,16 +23,20 @@ public class BodyFactory {
 		fdef.restitution = 0.6f;
 
 		BodyDef bd = new BodyDef();
-		// bd.isBullet = true;
-		bd.allowSleep = true;
+		
+		bd.allowSleep = false;
 		bd.position.set(x, y);
 		Body body = world.createBody(bd);
+		
 		body.createFixture(fdef);
 		if (isStatic) {
 			body.setType(BodyDef.BodyType.StaticBody);
 		} else {
 			body.setType(BodyDef.BodyType.DynamicBody);
 		}
+		//body.setActive(true);
+		
+		sd.dispose();
 		return body;
 	}
 
@@ -72,20 +76,26 @@ public class BodyFactory {
 	}
 	
 	public static Body createRectangle(World world, float x, float y, float width, float height, BodyDef.BodyType type) {
-		PolygonShape wallshape = new PolygonShape();
-		wallshape.setAsBox(width / 2, height / 2, new Vector2(x, y), 0);
-
-		FixtureDef fdef = new FixtureDef();
-		fdef.shape = wallshape;
-		fdef.density = 1.0f;
-		fdef.restitution = 0.6f;
-		
 		BodyDef bd = new BodyDef();
 		bd.position.set(x, y);
 		
 		Body rectangle = world.createBody(bd);
+		
+		PolygonShape shape = new PolygonShape();
+		//TODO
+		shape.setAsBox(width / 2 * 100, height / 2 * 100, new Vector2(x, y), 1.5839f);
+
+		FixtureDef fdef = new FixtureDef();
+		fdef.shape = shape;
+		fdef.density = 1.0f;
+		fdef.restitution = 1f;
+		
+		
+		
 		rectangle.createFixture(fdef);
 		rectangle.setType(type);
+		
+		shape.dispose();
 		return rectangle;
 	}
 

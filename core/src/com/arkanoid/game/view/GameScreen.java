@@ -19,8 +19,10 @@ package com.arkanoid.game.view;
 import com.arkanoid.game.Assets;
 import com.arkanoid.game.model.GameField.WorldListener;
 import com.arkanoid.game.model.GameField;
+import com.arkanoid.game.model.PhysicalObject;
 import com.arkanoid.game.utils.GLShapeRenderer;
 import com.arkanoid.game.utils.GameRendering;
+import com.arkanoid.game.utils.SpriteBatcher;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Game;
@@ -28,10 +30,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Body;
 
 public class GameScreen implements Screen {
 	static final int GAME_READY = 0;
@@ -45,7 +46,7 @@ public class GameScreen implements Screen {
 	int state;
 	OrthographicCamera guiCam;
 	Vector3 touchPoint;
-	SpriteBatch batcher;
+	SpriteBatcher batcher;
 	GLShapeRenderer renderer;
 	GameField field;
 	WorldListener worldListener;
@@ -64,7 +65,7 @@ public class GameScreen implements Screen {
 		guiCam = new OrthographicCamera(320, 480);
 		guiCam.position.set(320 / 2, 480 / 2, 0);
 		touchPoint = new Vector3();
-		batcher = new SpriteBatch();
+		batcher = new SpriteBatcher();
 		renderer = new GLShapeRenderer();
 		worldListener = new WorldListener() {
 			@Override
@@ -84,12 +85,19 @@ public class GameScreen implements Screen {
 
 			@Override
 			public void tick(GameField field, long msecs) {
-				//Assets.playSound(Assets.hitSound);
+
 			}
 
 			@Override
 			public void vausMoved(GameField field) {
+				
+			}
+
+			@Override
+			public void processCollision(GameField field,
+					PhysicalObject element, Body hitBody, Body ball) {
 				Assets.playSound(Assets.hitSound);
+				
 			}		
 		};
 		field = new GameField(worldListener);
@@ -102,35 +110,13 @@ public class GameScreen implements Screen {
 		scoreString = "SCORE: 0";
 	}
 
-	public void update (float deltaTime) {
-		if (deltaTime > 0.1f) deltaTime = 0.1f;
-
-		switch (state) {
-		case GAME_READY:
-			updateReady();
-			break;
-		case GAME_RUNNING:
-			updateRunning(deltaTime);
-			break;
-		case GAME_PAUSED:
-			updatePaused();
-			break;
-		case GAME_LEVEL_END:
-			updateLevelEnd();
-			break;
-		case GAME_OVER:
-			updateGameOver();
-			break;
-		}
-	}
-
-	private void updateReady () {
+	private void updateReady() {
 		if (Gdx.input.justTouched()) {
 			state = GAME_RUNNING;
 		}
 	}
 
-	private void updateRunning (float deltaTime) {
+	private void updateRunning() {
 		if (Gdx.input.justTouched()) {
 			guiCam.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
 
@@ -147,8 +133,8 @@ public class GameScreen implements Screen {
 			field.changeGravity(Gdx.input.getAccelerometerX(), Gdx.input.getAccelerometerY());
 		} else {
 			float moveX = 0;
-			if (Gdx.input.isKeyPressed(Keys.DPAD_LEFT)) moveX = -50f;
-			if (Gdx.input.isKeyPressed(Keys.DPAD_RIGHT)) moveX = 50f;
+			if (Gdx.input.isKeyPressed(Keys.DPAD_LEFT)) moveX = -5f;
+			if (Gdx.input.isKeyPressed(Keys.DPAD_RIGHT)) moveX = 5f;
 			float accelX = 0;
 			float accelY = 0;
 			if (Gdx.input.isKeyPressed(Keys.A)) accelX = 5f;
@@ -166,16 +152,14 @@ public class GameScreen implements Screen {
 		}		
 	}
 
-	private void updatePaused () {
+	private void updatePaused() {
 		if (Gdx.input.justTouched()) {
 			guiCam.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-
 			if (resumeBounds.contains(touchPoint.x, touchPoint.y)) {
 				Assets.playSound(Assets.clickSound);
 				state = GAME_RUNNING;
 				return;
 			}
-
 			if (quitBounds.contains(touchPoint.x, touchPoint.y)) {
 				Assets.playSound(Assets.clickSound);
 				game.setScreen(new MainMenuScreen(game));
@@ -184,7 +168,7 @@ public class GameScreen implements Screen {
 		}
 	}
 
-	private void updateLevelEnd () {
+	private void updateLevelEnd() {
 		if (Gdx.input.justTouched()) {
 			field = new GameField(worldListener);
 			gameRendering = new GameRendering(batcher, renderer, field);
@@ -192,71 +176,68 @@ public class GameScreen implements Screen {
 		}
 	}
 
-	private void updateGameOver () {
+	private void updateGameOver() {
 		if (Gdx.input.justTouched()) {
 			game.setScreen(new MainMenuScreen(game));
 		}
 	}
 
-	public void draw () {
-		GL20 gl = Gdx.gl;
-		field.tick((long)(Gdx.graphics.getDeltaTime() * 3000), 4);
+	public void draw() {		
+		GL20 gl = Gdx.gl; 
+			
 		gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
 		gameRendering.render();
 		
 		guiCam.update();
 		batcher.setProjectionMatrix(guiCam.combined);
 		batcher.enableBlending();
 		batcher.begin();
+		
 		switch (state) {
+		case GAME_RUNNING:
+			field.tick((long)(Gdx.graphics.getDeltaTime() * 20000), 4);
+			batcher.presentRunning();
+			break;
 		case GAME_READY:
-			presentReady();
-			break;
-		case GAME_RUNNING: {
-			//field.tick((long)(Gdx.graphics.getDeltaTime() * 3000), 4);
-			presentRunning();
-			break;
-		}
-			
+			batcher.presentReady();
+			break;			
 		case GAME_PAUSED:
-			presentPaused();
+			batcher.presentPaused();
 			break;
 		case GAME_LEVEL_END:
-			presentLevelEnd();
+			batcher.presentLevelEnd();
 			break;
 		case GAME_OVER:
-			presentGameOver();
+			batcher.presentGameOver();
 			break;
 		}
 		batcher.end();
 	}
-
-	private void presentReady () {
-		batcher.draw(Assets.ready, 160 - 192 / 2, 240 - 32 / 2, 192, 32);
-	}
-
-	private void presentRunning () {
-		batcher.draw(Assets.pause, 320 - 64, 480 - 64, 64, 64);
-	}
-
-	private void presentPaused () {
-		batcher.draw(Assets.pauseMenu, 160 - 192 / 2, 240 - 96 / 2, 192, 96);
-		//Assets.font.draw(batcher, scoreString, 16, 480 - 20);
-	}
-
-	private void presentLevelEnd () {
-
-	}
-
-	private void presentGameOver () {
-		batcher.draw(Assets.gameOver, 160 - 160 / 2, 240 - 96 / 2, 160, 96);
-	}
-
+	
 	@Override
-	public void render (float delta) {
-		update(delta);
+	public void render(float delta) {
+		update();
 		draw();
+	}
+	
+	public void update () {
+		switch (state) {
+		case GAME_RUNNING:
+			updateRunning();
+			break;
+		case GAME_READY:
+			updateReady();
+			break;
+		case GAME_PAUSED:
+			updatePaused();
+			break;
+		case GAME_LEVEL_END:
+			updateLevelEnd();
+			break;
+		case GAME_OVER:
+			updateGameOver();
+			break;
+		}
 	}
 
 	@Override

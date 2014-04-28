@@ -2,6 +2,7 @@ package com.arkanoid.game.model;
 
 import com.badlogic.gdx.physics.box2d.Body;
 
+
 public class PhysicalObject {
 	private Body body;
 	
@@ -20,5 +21,4 @@ public class PhysicalObject {
 	public float getYPos() {
 		return this.body.getPosition().y;
 	}
-
 }

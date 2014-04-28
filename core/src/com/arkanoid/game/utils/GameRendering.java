@@ -16,44 +16,33 @@
 
 package com.arkanoid.game.utils;
 
-import com.arkanoid.game.Assets;
 import com.arkanoid.game.model.Ball;
 import com.arkanoid.game.model.GameField;
 import com.arkanoid.game.model.Vaus;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.physics.box2d.Body;
 
 public class GameRendering {
 	
-	static final float FRUSTUM_WIDTH = 100;
-	static final float FRUSTUM_HEIGHT = 150;
 	GameField field;
 	OrthographicCamera cam;
-	SpriteBatch batch;
+	SpriteBatcher batcher;
 	GLShapeRenderer renderer;
 
-	public GameRendering (SpriteBatch batch, GLShapeRenderer renderer, GameField field) {
+	public GameRendering (SpriteBatcher batch, GLShapeRenderer renderer, GameField field) {
 		this.field = field;
-		this.cam = new OrthographicCamera(FRUSTUM_WIDTH, FRUSTUM_HEIGHT);
-		this.cam.position.set(FRUSTUM_WIDTH / 2, FRUSTUM_HEIGHT / 2, 0);
-		this.batch = batch;
+		this.cam = new OrthographicCamera(GameField.WORLD_WIDTH, GameField.WORLD_HEIGHT);
+		this.cam.position.set(GameField.WORLD_WIDTH / 2, GameField.WORLD_HEIGHT / 2, 0);
+		this.batcher = batch;
 		this.renderer = renderer;
 	}
 
 	public void render() {
 		cam.update();
-		batch.setProjectionMatrix(cam.combined);
-		renderBackground();
+		batcher.setProjectionMatrix(cam.combined);
+		batcher.renderBackground();
 		renderObjects();
-	}
-
-	public void renderBackground () {
-		batch.disableBlending();
-		batch.begin();
-		batch.draw(Assets.backgroundRegion, cam.position.x - FRUSTUM_WIDTH / 2, cam.position.y - FRUSTUM_HEIGHT / 2, FRUSTUM_WIDTH,
-			FRUSTUM_HEIGHT);
-		batch.end();
 	}
 
 	public void renderObjects () {
@@ -63,6 +52,8 @@ public class GameRendering {
 
 	private void renderVaus() {
 		Vaus vaus = this.field.getVaus();
+		Body body = vaus.getBody();
+		//body.getFixtureList().
 		renderer.fillRectangle(vaus.getRectangle());	
 	}
 

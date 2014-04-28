@@ -16,13 +16,17 @@
 
 package com.arkanoid.game.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 
@@ -37,7 +41,7 @@ public class GameField implements ContactListener {
 
 		public void tick(GameField field, long msecs);
 
-		//public void processCollision (GameField field, FieldElement element, Body hitBody, Body ball);
+		public void processCollision (GameField field, PhysicalObject element, Body hitBody, Body ball);
 
 		public void vausMoved(GameField field);
 	}
@@ -87,7 +91,7 @@ public class GameField implements ContactListener {
 		for (int i = 0; i < iters; i++) {
 			//clearBallContacts();
 			world.step(dt, 10, 10);
-			//processBallContacts();
+			processBallContacts();
 		}
 
 		gameTime += msecs;
@@ -97,20 +101,44 @@ public class GameField implements ContactListener {
 		getWorldListener().tick(this, msecs);
 	}
 	
+	private void processBallContacts() {
+		Body ball = getBall().getBody();
+		
+		if (ball.getUserData() == null) return;
+
+		List<Fixture> fixtures = (List<Fixture>)ball.getUserData();
+		int len2 = fixtures.size();
+		for (int j = 0; j < len2; j++) {
+			Fixture f = fixtures.get(j);
+			if (f.getBody() != null)
+			getVaus().handleCollision(f.getBody());
+		}
+		fixtures.clear();
+				
+	}
+
 	public WorldListener getWorldListener() {
 		return listener;
 	}
 	
 	@Override
 	public void beginContact(Contact contact) {
-		// TODO Auto-generated method stub
-		
+		@SuppressWarnings("unused")
+		Body ball = contact.getFixtureA().getBody();		
 	}
 
 	@Override
 	public void endContact(Contact contact) {
-		// TODO Auto-generated method stub
-		
+		Body ball = contact.getFixtureA().getBody();
+		Fixture fixture = contact.getFixtureB();
+
+		if (ball != null) {
+			List<Fixture> fixtures = (List<Fixture>)ball.getUserData();
+			if (fixtures == null) {
+				ball.setUserData(fixtures = new ArrayList<Fixture>());
+			}
+			fixtures.add(fixture);
+		}
 	}
 
 	@Override
@@ -134,7 +162,7 @@ public class GameField implements ContactListener {
 	}
 
 	private void checkGameOver () {
-/*		if (heightSoFar - 7.5f > bob.position.y) {
+/*		if (true) {
 			state = WORLD_STATE_GAME_OVER;
 		}*/
 	}

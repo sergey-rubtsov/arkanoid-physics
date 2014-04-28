@@ -19,7 +19,8 @@ package com.arkanoid.game.view;
 import com.arkanoid.game.Assets;
 import com.arkanoid.game.model.GameField.WorldListener;
 import com.arkanoid.game.model.GameField;
-import com.arkanoid.game.model.WorldRenderer;
+import com.arkanoid.game.utils.GLShapeRenderer;
+import com.arkanoid.game.utils.GameRendering;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Game;
@@ -28,6 +29,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
@@ -44,9 +46,10 @@ public class GameScreen implements Screen {
 	OrthographicCamera guiCam;
 	Vector3 touchPoint;
 	SpriteBatch batcher;
+	GLShapeRenderer renderer;
 	GameField field;
 	WorldListener worldListener;
-	WorldRenderer renderer;
+	GameRendering gameRendering;
 	
 	Rectangle pauseBounds;
 	Rectangle resumeBounds;
@@ -62,6 +65,7 @@ public class GameScreen implements Screen {
 		guiCam.position.set(320 / 2, 480 / 2, 0);
 		touchPoint = new Vector3();
 		batcher = new SpriteBatch();
+		renderer = new GLShapeRenderer();
 		worldListener = new WorldListener() {
 			@Override
 			public void gameStarted(GameField field) {
@@ -89,7 +93,8 @@ public class GameScreen implements Screen {
 			}		
 		};
 		field = new GameField(worldListener);
-		renderer = new WorldRenderer(batcher, field);
+		
+		gameRendering = new GameRendering(batcher, renderer, field);
 		pauseBounds = new Rectangle(320 - 64, 480 - 64, 64, 64);
 		resumeBounds = new Rectangle(160 - 96, 240, 192, 36);
 		quitBounds = new Rectangle(160 - 96, 240 - 36, 192, 36);
@@ -153,23 +158,12 @@ public class GameScreen implements Screen {
 			field.vausMove(moveX);			
 			field.changeGravity(accelX, accelY);
 		}
-/*		if (world.score != lastScore) {
-			lastScore = world.score;
-			scoreString = "SCORE: " + lastScore;
-		}*/
 		if (field.state == GameField.WORLD_STATE_NEXT_LEVEL) {
 			state = GAME_LEVEL_END;
 		}
 		if (field.state == GameField.WORLD_STATE_GAME_OVER) {
 			state = GAME_OVER;
-/*			if (lastScore >= Settings.highscores[4])
-				scoreString = "NEW HIGHSCORE: " + lastScore;
-			else
-				scoreString = "SCORE: " + lastScore;
-			Settings.addScore(lastScore);
-			Settings.save();*/
-		}
-		
+		}		
 	}
 
 	private void updatePaused () {
@@ -193,7 +187,7 @@ public class GameScreen implements Screen {
 	private void updateLevelEnd () {
 		if (Gdx.input.justTouched()) {
 			field = new GameField(worldListener);
-			renderer = new WorldRenderer(batcher, field);
+			gameRendering = new GameRendering(batcher, renderer, field);
 			state = GAME_READY;
 		}
 	}
@@ -209,7 +203,7 @@ public class GameScreen implements Screen {
 		field.tick((long)(Gdx.graphics.getDeltaTime() * 3000), 4);
 		gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		renderer.render();
+		gameRendering.render();
 		
 		guiCam.update();
 		batcher.setProjectionMatrix(guiCam.combined);

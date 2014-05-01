@@ -58,7 +58,7 @@ public class GameScreen implements Screen {
 	int lastScore;
 	String scoreString;
 
-	public GameScreen (Game game) {
+	public GameScreen(Game game) {
 		this.game = game;
 
 		state = GAME_READY;

@@ -3,6 +3,7 @@ package com.arkanoid.game.model;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 
 public class Vaus extends PhysicalObject {
@@ -14,6 +15,10 @@ public class Vaus extends PhysicalObject {
 		super.setBody(BodyFactory.createKinematicRectangle(world, x - width / 2, y - height / 2, width, height));
 		getBody().setActive(true);
 		getBody().setBullet(true);
+	}
+	
+	public Shape getShape() {
+		return getBody().getFixtureList().get(0).getShape();
 	}
 	
 	public Rectangle getRectangle() {

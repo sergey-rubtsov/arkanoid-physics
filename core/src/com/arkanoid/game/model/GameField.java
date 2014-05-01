@@ -55,7 +55,7 @@ public class GameField implements ContactListener {
 	public static final int WORLD_STATE_RUNNING = 0;
 	public static final int WORLD_STATE_NEXT_LEVEL = 1;
 	public static final int WORLD_STATE_GAME_OVER = 2;
-	public static final Vector2 gravity = new Vector2(0, -20);
+	public static final Vector2 gravity = new Vector2(0, -9.81f);
 	
 	WorldListener listener;
 	public final Random rand;
@@ -91,6 +91,7 @@ public class GameField implements ContactListener {
 		for (int i = 0; i < iters; i++) {
 			//clearBallContacts();
 			world.step(dt, 10, 10);
+			//world.step(1 / 60f, 8, 3);
 			processBallContacts();
 		}
 

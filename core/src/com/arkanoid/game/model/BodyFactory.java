@@ -78,22 +78,21 @@ public class BodyFactory {
 	public static Body createRectangle(World world, float x, float y, float width, float height, BodyDef.BodyType type) {
 		BodyDef bd = new BodyDef();
 		bd.position.set(x, y);
-		
-		Body rectangle = world.createBody(bd);
+		bd.type = type;		
 		
 		PolygonShape shape = new PolygonShape();
-		//TODO
-		shape.setAsBox(width / 2 * 100, height / 2 * 100, new Vector2(x, y), 1.5839f);
+		shape.setAsBox(width / 2, height / 2);
 
 		FixtureDef fdef = new FixtureDef();
 		fdef.shape = shape;
-		fdef.density = 1.0f;
-		fdef.restitution = 1f;
+		fdef.density = 0.1f;
+		fdef.restitution = 5f;
+		fdef.friction = 0.75f;
 		
-		
+		Body rectangle = world.createBody(bd);
 		
 		rectangle.createFixture(fdef);
-		rectangle.setType(type);
+		//rectangle.setType(type);
 		
 		shape.dispose();
 		return rectangle;

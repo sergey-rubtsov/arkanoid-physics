@@ -1,5 +1,6 @@
 package com.arkanoid.game.model;
 
+import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 
 public class Ball extends PhysicalObject {
@@ -11,6 +12,14 @@ public class Ball extends PhysicalObject {
 		super.setBody(BodyFactory.createCircle(world, x, y, radius, false));
 		getBody().setActive(true);
 		getBody().setBullet(true);
+	}
+	
+	public Shape getShape() {
+		return getBody().getFixtureList().get(0).getShape();
+	}
+	
+	public float getShapeRadius() {
+		return getBody().getFixtureList().get(0).getShape().getRadius();
 	}
 
 	public float getRadius() {

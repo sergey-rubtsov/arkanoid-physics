@@ -2,6 +2,7 @@ package com.arkanoid.game.utils;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.physics.box2d.Shape;
 
 public class GLShapeRenderer extends ShapeRenderer {	
 	
@@ -56,6 +57,10 @@ public class GLShapeRenderer extends ShapeRenderer {
 
 	public void fillRectangle(Rectangle rectangle) {
 		fillRectangle(rectangle.x, rectangle.y, rectangle.width, rectangle.height);		
+	}
+	
+	public void fillShape(Shape shape) {
+		
 	}
 	
 	public void begin() {

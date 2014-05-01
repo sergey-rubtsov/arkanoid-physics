@@ -187,10 +187,12 @@ public class GameScreen implements Screen {
 
 	public void draw() {		
 		GL20 gl = Gdx.gl;
-		gl.glClearColor(0, 0, 0, 1);
+		gl.glClearColor(0, 0, 1, 1);
 		gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		debugRenderer.render(field.getWorld(), guiCam.combined);
-		renderer.fillRectangle(field.getVaus().getRectangle());
+		//debugRenderer.render(field.getWorld(), guiCam.combined);
+		renderer.render(field.getWorld(), guiCam.combined);
+		//renderer.fillRectangle(field.getVaus().getRectangle());
+		renderer.drawConvexQuadrangle(field.getVaus().getShape(), renderer.RECCOLOR);
 		guiCam.update();
 		batcher.setProjectionMatrix(guiCam.combined);
 		batcher.enableBlending();

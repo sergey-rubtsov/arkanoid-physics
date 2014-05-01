@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.arkanoid.game.utils.Const;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -68,21 +69,19 @@ public class GameField implements ContactListener {
 	
 	private final Vaus vaus;
 	private final Ball ball;
+	private final Body leftBorder;
 
 	public GameField(WorldListener listener) {
-		generateWorld();
+		world = new World(Const.gravity, true);
+		world.setContactListener(this);
 		this.vaus = new Vaus(world, WORLD_WIDTH / 2, 50, VAUS_WIDTH, VAUS_HEIGHT);
 		this.ball = new Ball(world, WORLD_WIDTH / 2, 300, BALL_RADIUS);
+		//this.leftBorder = BodyFactory.createLine(world, 0, 2, WORLD_WIDTH, 2);
+		this.leftBorder = BodyFactory.createBorder(world);
 		this.listener = listener;
 		rand = new Random();		
 
 		this.state = WORLD_STATE_RUNNING;
-	}
-	
-	private void generateWorld() {
-		boolean doSleep = true;
-		world = new World(gravity, doSleep);
-		world.setContactListener(this);
 	}
 	
 	public void tick(long msecs, int iters) {
@@ -90,9 +89,9 @@ public class GameField implements ContactListener {
 
 		for (int i = 0; i < iters; i++) {
 			//clearBallContacts();
-			world.step(dt, 10, 10);
-			//world.step(1 / 60f, 8, 3);
-			processBallContacts();
+			//world.step(dt, 10, 10);
+			world.step(1 / 60f, 10, 10);
+			//processBallContacts();
 		}
 
 		gameTime += msecs;
@@ -124,7 +123,6 @@ public class GameField implements ContactListener {
 	
 	@Override
 	public void beginContact(Contact contact) {
-		@SuppressWarnings("unused")
 		Body ball = contact.getFixtureA().getBody();		
 	}
 
@@ -159,7 +157,7 @@ public class GameField implements ContactListener {
 	}
 	
 	public void changeGravity(float accelX, float accelY) {
-		this.world.setGravity(new Vector2(accelX, accelY));
+		//this.world.setGravity(new Vector2(accelX, accelY));
 	}
 
 	private void checkGameOver () {
@@ -174,6 +172,14 @@ public class GameField implements ContactListener {
 
 	public Vaus getVaus() {
 		return vaus;
+	}
+
+	public World getWorld() {
+		return world;
+	}
+
+	public void setWorld(World world) {
+		this.world = world;
 	}
 
 }

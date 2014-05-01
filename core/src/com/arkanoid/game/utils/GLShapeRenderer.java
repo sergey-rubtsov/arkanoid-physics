@@ -50,7 +50,7 @@ public class GLShapeRenderer extends ShapeRenderer {
 		float fg = 50 / 255f;
 		float fb = 50 / 255f;
 		setColor(fr, fg, fb, 1);
-		rect(x, y, width, height);
+		rect(x + width / 2, y + height / 2, width, height);
 		end();
 		begin(ShapeType.Line);		
 	}

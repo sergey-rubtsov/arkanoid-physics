@@ -20,6 +20,7 @@ import com.arkanoid.game.Assets;
 import com.arkanoid.game.model.GameField.WorldListener;
 import com.arkanoid.game.model.GameField;
 import com.arkanoid.game.model.PhysicalObject;
+import com.arkanoid.game.utils.Const;
 import com.arkanoid.game.utils.GLShapeRenderer;
 import com.arkanoid.game.utils.GameRendering;
 import com.arkanoid.game.utils.SpriteBatcher;
@@ -33,6 +34,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 
 public class GameScreen implements Screen {
 	static final int GAME_READY = 0;
@@ -48,9 +50,11 @@ public class GameScreen implements Screen {
 	Vector3 touchPoint;
 	SpriteBatcher batcher;
 	GLShapeRenderer renderer;
+	Box2DDebugRenderer debugRenderer;
+	
+	
 	GameField field;
 	WorldListener worldListener;
-	GameRendering gameRendering;
 	
 	Rectangle pauseBounds;
 	Rectangle resumeBounds;
@@ -62,11 +66,12 @@ public class GameScreen implements Screen {
 		this.game = game;
 
 		state = GAME_READY;
-		guiCam = new OrthographicCamera(320, 480);
-		guiCam.position.set(320 / 2, 480 / 2, 0);
+		guiCam = new OrthographicCamera(Const.WORLD_WIDTH, Const.WORLD_HEIGHT);
+		guiCam.position.set(Const.WORLD_WIDTH / 2, Const.WORLD_HEIGHT / 2, 0);
 		touchPoint = new Vector3();
 		batcher = new SpriteBatcher();
 		renderer = new GLShapeRenderer();
+		debugRenderer = new Box2DDebugRenderer();
 		worldListener = new WorldListener() {
 			@Override
 			public void gameStarted(GameField field) {
@@ -102,7 +107,6 @@ public class GameScreen implements Screen {
 		};
 		field = new GameField(worldListener);
 		
-		gameRendering = new GameRendering(batcher, renderer, field);
 		pauseBounds = new Rectangle(320 - 64, 480 - 64, 64, 64);
 		resumeBounds = new Rectangle(160 - 96, 240, 192, 36);
 		quitBounds = new Rectangle(160 - 96, 240 - 36, 192, 36);
@@ -133,8 +137,8 @@ public class GameScreen implements Screen {
 			field.changeGravity(Gdx.input.getAccelerometerX(), Gdx.input.getAccelerometerY());
 		} else {
 			float moveX = 0;
-			if (Gdx.input.isKeyPressed(Keys.DPAD_LEFT)) moveX = -5f;
-			if (Gdx.input.isKeyPressed(Keys.DPAD_RIGHT)) moveX = 5f;
+			if (Gdx.input.isKeyPressed(Keys.DPAD_LEFT)) moveX = -50f;
+			if (Gdx.input.isKeyPressed(Keys.DPAD_RIGHT)) moveX = 50f;
 			float accelX = 0;
 			float accelY = 0;
 			if (Gdx.input.isKeyPressed(Keys.A)) accelX = 5f;
@@ -171,7 +175,6 @@ public class GameScreen implements Screen {
 	private void updateLevelEnd() {
 		if (Gdx.input.justTouched()) {
 			field = new GameField(worldListener);
-			gameRendering = new GameRendering(batcher, renderer, field);
 			state = GAME_READY;
 		}
 	}
@@ -183,11 +186,11 @@ public class GameScreen implements Screen {
 	}
 
 	public void draw() {		
-		GL20 gl = Gdx.gl; 
-			
+		GL20 gl = Gdx.gl;
+		gl.glClearColor(0, 0, 0, 1);
 		gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		gameRendering.render();
-		
+		debugRenderer.render(field.getWorld(), guiCam.combined);
+		renderer.fillRectangle(field.getVaus().getRectangle());
 		guiCam.update();
 		batcher.setProjectionMatrix(guiCam.combined);
 		batcher.enableBlending();

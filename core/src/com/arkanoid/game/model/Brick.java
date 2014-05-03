@@ -42,30 +42,4 @@ public class Brick extends PhysicalObject {
 		ball.getBody().applyAngularImpulse(0, false);
 		return false;
 	}
-	
-	@Override
-	public void impact(PhysicalObject body) {
-		int i;
-		i = 0;
-		i++;		
-	}
-	
-	Vector2 impulseForBall(Body ball) {
-		if (this.kick <= 0) return null;
-		// compute unit vector from center of peg to ball, and scale by kick value to get impulse
-		Vector2 ballpos = ball.getWorldCenter();
-		//float ix = ballpos.x - this.cx;
-		//float iy = ballpos.y - this.cy;
-		//float mag = (float)Math.sqrt(ix * ix + iy * iy);
-		//float scale = this.kick / mag;
-		//return new Vector2(ix * scale, iy * scale);
-		return null;
-	}
-
-	public void handleCollision (Body ball) {
-		Vector2 impulse = this.impulseForBall(ball);
-		if (impulse != null) {
-			ball.applyLinearImpulse(impulse, ball.getWorldCenter(), true);
-		}		
-	}
 }

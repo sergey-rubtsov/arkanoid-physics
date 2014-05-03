@@ -92,10 +92,10 @@ public class Assets {
 		
 		font = new BitmapFont(Gdx.files.internal("data/font.fnt"), Gdx.files.internal("data/font.png"), false);
 
-		music = Gdx.audio.newMusic(Gdx.files.internal("data/sounds/music.mp3"));
-		music.setLooping(true);
-		music.setVolume(0.5f);
-		if (Settings.soundEnabled) music.play();
+		//music = Gdx.audio.newMusic(Gdx.files.internal("data/sounds/music.mp3"));
+		//music.setLooping(true);
+		//music.setVolume(0.5f);
+		//if (Settings.soundEnabled) music.play();
 		hitSound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/hit.wav"));
 		clickSound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/click.wav"));
 		

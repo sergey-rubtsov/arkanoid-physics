@@ -31,28 +31,4 @@ public class Vaus extends PhysicalObject {
 		rectangle.y = super.getYPos() - this.heigth;
 		return rectangle;
 	}
-	
-	public void handleCollision(Body ball) {
-		//Vector2 impulse = this.impulseForBall(ball);
-		//ball.applyLinearImpulse(impulse, ball.getWorldCenter(), true);
-	}
-	
-	Vector2 impulseForBall(Body ball) {		
-		// compute unit vector from center of peg to ball, and scale by kick value to get impulse
-		Vector2 ballpos = ball.getWorldCenter();
-		float ix = ballpos.x - this.getXPos();
-		float iy = ballpos.y - this.getYPos();
-		float mag = (float)Math.sqrt(ix * ix + iy * iy);
-		float scale = 0.1f / mag;
-		return new Vector2(ix * scale, iy * scale);
-	}
-
-	@Override
-	public void impact(PhysicalObject body) {
-		if (body.getClass() == Ball.class) {
-			float accX = body.getBody().getLinearVelocity().x * 200;
-			float accY = body.getBody().getLinearVelocity().y * 200;
-			this.getBody().applyForce(accX, accY, getXPos(), getYPos(), true);
-		}
-	}
 }

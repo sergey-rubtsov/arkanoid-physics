@@ -74,36 +74,34 @@ public class GameScreen implements Screen {
 		debugRenderer = new Box2DDebugRenderer();
 		worldListener = new WorldListener() {
 			@Override
-			public void gameStarted(GameField field) {
+			public void gameStarted() {								
+			}
+
+			@Override
+			public void ballLost() {
+				Assets.playSound(Assets.hitSound);
+			}
+
+			@Override
+			public void gameEnded() {
+				Assets.playSound(Assets.hitSound);
+			}
+
+			@Override
+			public void tick() {
+
+			}
+
+			@Override
+			public void processBallAndBrickContact() {
+				Assets.playSound(Assets.balloon0Sound);				
+			}
+
+			@Override
+			public void processBallAndVausContact() {
 				Assets.playSound(Assets.hitSound);				
 			}
-
-			@Override
-			public void ballLost(GameField field) {
-				Assets.playSound(Assets.hitSound);
-			}
-
-			@Override
-			public void gameEnded(GameField field) {
-				Assets.playSound(Assets.hitSound);
-			}
-
-			@Override
-			public void tick(GameField field, long msecs) {
-
-			}
-
-			@Override
-			public void vausMoved(GameField field) {
-				
-			}
-
-			@Override
-			public void processCollision(GameField field,
-					PhysicalObject element, Body hitBody, Body ball) {
-				Assets.playSound(Assets.hitSound);
-				
-			}		
+		
 		};
 		field = new GameField(worldListener);
 		
@@ -189,9 +187,9 @@ public class GameScreen implements Screen {
 		GL20 gl = Gdx.gl;
 		gl.glClearColor(0, 0, 1, 1);
 		gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		//debugRenderer.render(field.getWorld(), guiCam.combined);
-		renderer.render(field.getWorld(), guiCam.combined);
-		renderer.fillRectangle(field.getVaus().getRectangle());
+		debugRenderer.render(field.getWorld(), guiCam.combined);
+		//renderer.render(field.getWorld(), guiCam.combined);
+		//renderer.fillRectangle(field.getVaus().getRectangle());
 		//TODO fix method:
 		//renderer.drawConvexQuadrangle(field.getVaus().getShape(), renderer.RECCOLOR);
 		guiCam.update();

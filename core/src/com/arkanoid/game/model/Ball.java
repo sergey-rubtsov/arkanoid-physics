@@ -26,11 +26,4 @@ public class Ball extends PhysicalObject {
 	public float getRadius() {
 		return radius;
 	}
-
-	@Override
-	public void impact(PhysicalObject body) {
-		int i;
-		i = 0;
-		i++;
-	}
 }

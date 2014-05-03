@@ -16,9 +16,10 @@ public abstract class PhysicalObject {
 		this.body = body;
 	}
 	
-	public void setRestitution(float restitution) {
+	public void setRestitutionAndFriction(float restitution, float friction) {
 		for (Fixture fixture : body.getFixtureList()) {
 			fixture.setRestitution(restitution);
+			fixture.setFriction(friction);
 		}		
 	}
 	
@@ -29,6 +30,4 @@ public abstract class PhysicalObject {
 	public float getYPos() {
 		return this.body.getPosition().y;
 	}
-	
-	public abstract void impact(PhysicalObject body);
 }

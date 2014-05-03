@@ -23,7 +23,7 @@ public class BodyFactory {
 		fdef.shape = sd;
 		fdef.density = 1.0f;
 		fdef.friction = 0.3f;
-		fdef.restitution = 1f;
+		fdef.restitution = 5f;
 
 		BodyDef bd = new BodyDef();
 		
@@ -93,8 +93,8 @@ public class BodyFactory {
 
 		FixtureDef fdef = new FixtureDef();
 		fdef.shape = shape;
-		fdef.restitution = 3f;
-		fdef.friction = 0.5f;
+		fdef.restitution = 1f;
+		fdef.friction = 2f;
 		
 		Body rectangle = world.createBody(bd);
 		

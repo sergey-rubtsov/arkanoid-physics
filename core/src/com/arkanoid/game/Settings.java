@@ -24,7 +24,7 @@ public class Settings {
 	public final static int[] highscores = new int[] {100, 80, 50, 30, 10};
 	public final static String file = ".arkanoid";
 
-	public static void load () {
+	public static void load() {
 		try {
 			FileHandle filehandle = Gdx.files.external(file);
 			
@@ -39,7 +39,7 @@ public class Settings {
 		}
 	}
 
-	public static void save () {
+	public static void save() {
 		try {
 			FileHandle filehandle = Gdx.files.external(file);
 			
@@ -51,7 +51,7 @@ public class Settings {
 		}
 	}
 
-	public static void addScore (int score) {
+	public static void addScore(int score) {
 		for (int i = 0; i < 5; i++) {
 			if (highscores[i] < score) {
 				for (int j = 4; j > i; j--)

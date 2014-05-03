@@ -16,7 +16,6 @@
 
 package com.arkanoid.game.model;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -51,7 +50,7 @@ public class GameField implements ContactListener {
 	public static final int WORLD_HEIGHT = Gdx.graphics.getHeight();
 	public static final int VAUS_WIDTH = WORLD_WIDTH / 5;
 	public static final int VAUS_HEIGHT = WORLD_HEIGHT / 50;
-	public static final int BALL_RADIUS = WORLD_WIDTH / 50;
+	public static final int BALL_RADIUS = WORLD_WIDTH / 40;
 	
 	public static final int WORLD_STATE_RUNNING = 0;
 	public static final int WORLD_STATE_NEXT_LEVEL = 1;
@@ -67,38 +66,34 @@ public class GameField implements ContactListener {
 	
 	long gameTime;
 	
+	public enum BodyType {
+	    VAUS, BALL, BRICK, OTHER 
+	}
+	
 	private final Vaus vaus;
 	private final Ball ball;
-	private final Body leftBorder;
+	private final Border border;
 
 	public GameField(WorldListener listener) {
 		world = new World(Const.gravity, true);
 		world.setContactListener(this);
 		this.vaus = new Vaus(world, WORLD_WIDTH / 2, 50, VAUS_WIDTH, VAUS_HEIGHT);
 		this.ball = new Ball(world, WORLD_WIDTH / 2, 300, BALL_RADIUS);
-		//this.leftBorder = BodyFactory.createLine(world, 0, 2, WORLD_WIDTH, 2);
-		this.leftBorder = BodyFactory.createBorder(world);
+		this.border = new Border(world);
+		//BodyFactory.createBorder(world);
 		this.listener = listener;
 		rand = new Random();		
 
 		this.state = WORLD_STATE_RUNNING;
 	}
 	
-	public void tick(long msecs, int iters) {
-		float dt = (msecs / 1000.0f) / iters;
-
+	public void step() {
+		int iters = 4;
+		float dt = Gdx.graphics.getDeltaTime() * 3000 / 1000.0f / iters;
 		for (int i = 0; i < iters; i++) {
-			//clearBallContacts();
-			//world.step(dt, 10, 10);
-			world.step(1 / 60f, 10, 10);
-			//processBallContacts();
+			world.step(dt, 10, 10);
 		}
-
-		gameTime += msecs;
-		//processElementTicks();
-		//processScheduledActions();
-
-		getWorldListener().tick(this, msecs);
+		getWorldListener().tick(this, (long)Gdx.graphics.getDeltaTime());
 	}
 	
 	private void processBallContacts() {
@@ -123,37 +118,46 @@ public class GameField implements ContactListener {
 	
 	@Override
 	public void beginContact(Contact contact) {
-		Body ball = contact.getFixtureA().getBody();		
+		Object bodyA = contact.getFixtureA().getBody().getUserData();
+		Object bodyB = contact.getFixtureB().getBody().getUserData();
+		if (bodyA != null && bodyB != null) {
+			PhysicalObject impactedA = (PhysicalObject)bodyA;
+			PhysicalObject impactedB = (PhysicalObject)bodyB;
+			impactedA.impact(impactedB);
+		}	
+	}
+	
+	public void processBallAndVausContact() {
+		
+	}
+	
+	public void processBallAndBrickContact() {
+		
 	}
 
 	@Override
 	public void endContact(Contact contact) {
-		Body ball = contact.getFixtureA().getBody();
-		Fixture fixture = contact.getFixtureB();
 
-		if (ball != null) {
-			List<Fixture> fixtures = (List<Fixture>)ball.getUserData();
-			if (fixtures == null) {
-				ball.setUserData(fixtures = new ArrayList<Fixture>());
-			}
-			fixtures.add(fixture);
-		}
 	}
 
 	@Override
 	public void preSolve(Contact contact, Manifold oldManifold) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void postSolve(Contact contact, ContactImpulse impulse) {
-		// TODO Auto-generated method stub
-		
+		//destroy brick
 	}
 	
-	public void vausMove(float deltaX) {
-		this.vaus.getBody().setLinearVelocity(new Vector2(deltaX, 0));
+	public void vausMove(float moveX) {
+		Vector2 velocity = new Vector2(moveX, 0);
+		if ((this.vaus.getBody().getPosition().x - this.vaus.width / 2) <= 0) {
+			velocity = new Vector2(60, 0);
+		}
+		if ((this.vaus.getBody().getPosition().x + this.vaus.width / 2) >= WORLD_WIDTH) {
+			velocity = new Vector2(-60, 0);
+		}
+		this.vaus.getBody().setLinearVelocity(velocity);
 	}
 	
 	public void changeGravity(float accelX, float accelY) {
@@ -172,6 +176,10 @@ public class GameField implements ContactListener {
 
 	public Vaus getVaus() {
 		return vaus;
+	}	
+
+	public Border getBorder() {
+		return border;
 	}
 
 	public World getWorld() {
@@ -181,5 +189,4 @@ public class GameField implements ContactListener {
 	public void setWorld(World world) {
 		this.world = world;
 	}
-
 }

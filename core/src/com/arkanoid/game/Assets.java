@@ -54,6 +54,10 @@ public class Assets {
 	public static Music music;
 	public static Sound hitSound;
 	public static Sound clickSound;
+	
+	public static Sound balloon0Sound;
+	public static Sound balloon1Sound;
+	public static Sound balloon2Sound;
 
 	public static Texture loadTexture (String file) {
 		return new Texture(Gdx.files.internal(file));
@@ -88,12 +92,16 @@ public class Assets {
 		
 		font = new BitmapFont(Gdx.files.internal("data/font.fnt"), Gdx.files.internal("data/font.png"), false);
 
-		music = Gdx.audio.newMusic(Gdx.files.internal("data/music.mp3"));
+		music = Gdx.audio.newMusic(Gdx.files.internal("data/sounds/music.mp3"));
 		music.setLooping(true);
 		music.setVolume(0.5f);
 		if (Settings.soundEnabled) music.play();
-		hitSound = Gdx.audio.newSound(Gdx.files.internal("data/hit.wav"));
-		clickSound = Gdx.audio.newSound(Gdx.files.internal("data/click.wav"));
+		hitSound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/hit.wav"));
+		clickSound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/click.wav"));
+		
+		balloon0Sound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/balloon0.wav"));
+		balloon1Sound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/balloon1.wav"));
+		balloon2Sound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/balloon2.wav"));
 	}
 
 	public static void playSound (Sound sound) {

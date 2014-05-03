@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 
 public class Vaus extends PhysicalObject {
@@ -20,6 +19,7 @@ public class Vaus extends PhysicalObject {
 		super.setBody(BodyFactory.createKinematicRectangle(world, x, y, width, height));
 		getBody().setActive(true);
 		getBody().setBullet(true);
+		getBody().setUserData(this);
 	}
 	
 	public PolygonShape getShape() {
@@ -45,5 +45,14 @@ public class Vaus extends PhysicalObject {
 		float mag = (float)Math.sqrt(ix * ix + iy * iy);
 		float scale = 0.1f / mag;
 		return new Vector2(ix * scale, iy * scale);
+	}
+
+	@Override
+	public void impact(PhysicalObject body) {
+		if (body.getClass() == Ball.class) {
+			float accX = body.getBody().getLinearVelocity().x * 200;
+			float accY = body.getBody().getLinearVelocity().y * 200;
+			this.getBody().applyForce(accX, accY, getXPos(), getYPos(), true);
+		}
 	}
 }

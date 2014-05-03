@@ -78,6 +78,11 @@ public class BodyFactory {
 		return createRectangle(world, x, y, width, height, BodyDef.BodyType.KinematicBody);
 	}
 	
+	public static Body createStaticRectangle(World world, float x, float y,
+			float width, float height) {
+		return createRectangle(world, x, y, width, height, BodyDef.BodyType.StaticBody);
+	}
+	
 	public static Body createRectangle(World world, float x, float y, float width, float height, BodyDef.BodyType type) {
 		BodyDef bd = new BodyDef();
 		bd.position.set(x, y);
@@ -88,7 +93,7 @@ public class BodyFactory {
 
 		FixtureDef fdef = new FixtureDef();
 		fdef.shape = shape;
-		fdef.restitution = 5f;
+		fdef.restitution = 3f;
 		fdef.friction = 0.5f;
 		
 		Body rectangle = world.createBody(bd);

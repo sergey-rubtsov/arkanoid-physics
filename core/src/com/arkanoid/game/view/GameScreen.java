@@ -137,8 +137,8 @@ public class GameScreen implements Screen {
 			field.changeGravity(Gdx.input.getAccelerometerX(), Gdx.input.getAccelerometerY());
 		} else {
 			float moveX = 0;
-			if (Gdx.input.isKeyPressed(Keys.DPAD_LEFT)) moveX = -50f;
-			if (Gdx.input.isKeyPressed(Keys.DPAD_RIGHT)) moveX = 50f;
+			if (Gdx.input.isKeyPressed(Keys.DPAD_LEFT)) moveX = -60f;
+			if (Gdx.input.isKeyPressed(Keys.DPAD_RIGHT)) moveX = 60f;
 			float accelX = 0;
 			float accelY = 0;
 			if (Gdx.input.isKeyPressed(Keys.A)) accelX = 5f;
@@ -191,8 +191,9 @@ public class GameScreen implements Screen {
 		gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		//debugRenderer.render(field.getWorld(), guiCam.combined);
 		renderer.render(field.getWorld(), guiCam.combined);
-		//renderer.fillRectangle(field.getVaus().getRectangle());
-		renderer.drawConvexQuadrangle(field.getVaus().getShape(), renderer.RECCOLOR);
+		renderer.fillRectangle(field.getVaus().getRectangle());
+		//TODO fix method:
+		//renderer.drawConvexQuadrangle(field.getVaus().getShape(), renderer.RECCOLOR);
 		guiCam.update();
 		batcher.setProjectionMatrix(guiCam.combined);
 		batcher.enableBlending();
@@ -200,7 +201,7 @@ public class GameScreen implements Screen {
 		
 		switch (state) {
 		case GAME_RUNNING:
-			field.tick((long)(Gdx.graphics.getDeltaTime() * 20000), 4);
+			field.step();
 			batcher.presentRunning();
 			break;
 		case GAME_READY:
@@ -259,7 +260,7 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void pause () {
-		if (state == GAME_RUNNING) state = GAME_PAUSED;
+		//if (state == GAME_RUNNING) state = GAME_PAUSED;
 	}
 
 	@Override
@@ -268,5 +269,9 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void dispose () {
+		batcher.dispose();
+		renderer.dispose();;
+		debugRenderer.dispose();
+		field.getWorld().dispose();
 	}
 }

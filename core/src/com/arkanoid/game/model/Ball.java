@@ -12,6 +12,7 @@ public class Ball extends PhysicalObject {
 		super.setBody(BodyFactory.createCircle(world, x, y, radius, false));
 		getBody().setActive(true);
 		getBody().setBullet(true);
+		getBody().setUserData(this);
 	}
 	
 	public Shape getShape() {
@@ -24,5 +25,12 @@ public class Ball extends PhysicalObject {
 
 	public float getRadius() {
 		return radius;
+	}
+
+	@Override
+	public void impact(PhysicalObject body) {
+		int i;
+		i = 0;
+		i++;
 	}
 }

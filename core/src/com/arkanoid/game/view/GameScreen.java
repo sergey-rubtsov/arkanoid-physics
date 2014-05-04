@@ -126,7 +126,7 @@ public class GameScreen implements Screen {
 			guiCam.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
 
 			if (pauseBounds.contains(touchPoint.x, touchPoint.y)) {
-				Assets.playSound(Assets.clickSound);
+				Assets.playSound(Assets.pauseSound);
 				state = GAME_PAUSED;
 				return;
 			}

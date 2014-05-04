@@ -59,11 +59,18 @@ public class Assets {
 	public static Sound vausSound;
 	
 	public static Sound balloon0Sound;
-	public static Sound balloon1Sound;
-	public static Sound balloon2Sound;
+	public static Sound balloonSound;
+	
+	public static Sound end0Sound;
+	public static Sound endSound;	
+	
 	public static Sound fail0Sound;
-	public static Sound fail1Sound;
-	public static Sound fail2Sound;
+	public static Sound failSound;
+	
+	public static Sound menu0Sound;
+	public static Sound menuSound;
+	
+	public static Sound pauseSound;
 
 	public static Texture loadTexture (String file) {
 		return new Texture(Gdx.files.internal(file));
@@ -108,11 +115,15 @@ public class Assets {
 		reboundSound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/rebound.wav"));
 		vausSound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/vaus.wav"));
 		balloon0Sound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/balloon0.wav"));
-		balloon1Sound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/balloon1.wav"));
-		balloon2Sound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/balloon2.wav"));
+		balloonSound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/balloon.wav"));
+		
+		end0Sound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/end0.wav"));
+		endSound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/end.wav"));		
+		
 		fail0Sound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/fail0.wav"));
-		fail1Sound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/fail1.wav"));
-		fail2Sound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/fail2.wav"));
+		failSound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/fail.wav"));
+		
+		pauseSound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/pause.wav"));
 	}
 
 	public static void playSound (Sound sound) {

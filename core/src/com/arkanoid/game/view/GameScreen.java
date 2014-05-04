@@ -19,7 +19,6 @@ package com.arkanoid.game.view;
 import com.arkanoid.game.Assets;
 import com.arkanoid.game.model.GameField.WorldListener;
 import com.arkanoid.game.model.GameField;
-import com.arkanoid.game.model.PhysicalObject;
 import com.arkanoid.game.utils.Const;
 import com.arkanoid.game.utils.GLShapeRenderer;
 import com.arkanoid.game.utils.GameRendering;
@@ -33,7 +32,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 
 public class GameScreen implements Screen {
@@ -79,7 +77,7 @@ public class GameScreen implements Screen {
 
 			@Override
 			public void ballLost() {
-				Assets.playSound(Assets.hitSound);
+				Assets.playSound(Assets.fail0Sound);
 			}
 
 			@Override
@@ -99,7 +97,12 @@ public class GameScreen implements Screen {
 
 			@Override
 			public void processBallAndVausContact() {
-				Assets.playSound(Assets.hitSound);				
+				Assets.playSound(Assets.vausSound);				
+			}
+
+			@Override
+			public void processBallAndBorderContact() {
+				Assets.playSound(Assets.reboundSound);				
 			}
 		
 		};

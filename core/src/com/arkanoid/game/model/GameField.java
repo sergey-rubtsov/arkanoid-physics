@@ -27,8 +27,10 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.JointEdge;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 
 public class GameField implements ContactListener {
 	public static interface WorldListener {
@@ -44,15 +46,17 @@ public class GameField implements ContactListener {
 		public void processBallAndBrickContact();
 		
 		public void processBallAndVausContact();
+
+		public void processBallAndBorderContact();
 	}
 
 	public static final int WORLD_WIDTH = Gdx.graphics.getWidth();
 	public static final int WORLD_HEIGHT = Gdx.graphics.getHeight();
 	public static final int VAUS_WIDTH = WORLD_WIDTH / 5;	
-	public static final int VAUS_HEIGHT = WORLD_HEIGHT / 50;
+	public static final int VAUS_HEIGHT = WORLD_HEIGHT / 40;
 	
 	public static final int BRICK_WIDTH = WORLD_WIDTH / 10;	
-	public static final int BRICK_HEIGHT = WORLD_HEIGHT / 20;
+	public static final int BRICK_HEIGHT = WORLD_HEIGHT / 30;
 	
 	public static final int BALL_RADIUS = WORLD_WIDTH / 40;
 	
@@ -75,6 +79,7 @@ public class GameField implements ContactListener {
 	private final Border border;
 	private List<Brick> bricks;
 	private Brick bumpedBrick;
+	private int mask;
 
 	public GameField(WorldListener listener) {
 		this.world = new World(Const.gravity, true);
@@ -83,6 +88,7 @@ public class GameField implements ContactListener {
 		this.ball = new Ball(world, WORLD_WIDTH / 2, 300, BALL_RADIUS);
 		this.border = new Border(world);
 		this.bumpedBrick = null;
+		this.mask = 0;
 		this.bricks = new ArrayList<Brick>();
 		buildScene();
 		
@@ -100,11 +106,16 @@ public class GameField implements ContactListener {
 	
 	public void step() {
 		int iters = 4;
-		float dt = Gdx.graphics.getDeltaTime() * 3000 / 1000.0f / iters;
-		for (int i = 0; i < iters; i++) {
-			world.step(dt, 10, 10);
-		}
+		step(iters);
 		getWorldListener().tick();
+	}
+	
+	public void step(int iters) {
+		//float dt = (Gdx.graphics.getDeltaTime() * 3000 / 1000.0f) / iters;
+		float dt = 1 / 60f;
+		for (int i = 0; i < iters; i++) {
+			world.step(dt, 10, 10);			
+		}		
 	}
 
 	public WorldListener getWorldListener() {
@@ -118,7 +129,7 @@ public class GameField implements ContactListener {
 	//00100 in binary
 	final public static int BRICK_CONTACT = 4;
 	//01000 in binary
-	final public static int BOARD_CONTACT = 8;
+	final public static int BORDER_CONTACT = 8;
 	//10000 in binary
 	final public static int BONUS_CONTACT = 16;
 	
@@ -127,12 +138,15 @@ public class GameField implements ContactListener {
 		Object bodyA = contact.getFixtureA().getBody().getUserData();
 		Object bodyB = contact.getFixtureB().getBody().getUserData();
 		if (bodyA != null && bodyB != null) {
-			int mask = 0;
+			mask = 0;
 			if (bodyA.getClass() == Ball.class || bodyB.getClass() == Ball.class) {
 				 mask = mask | BALL_CONTACT;			
 			}
 			if (bodyA.getClass() == Vaus.class || bodyB.getClass() == Vaus.class) {
 				 mask = mask | VAUS_CONTACT;			
+			}
+			if (bodyA.getClass() == Border.class || bodyB.getClass() == Border.class) {
+				 mask = mask | BORDER_CONTACT;			
 			}
 			if (bodyA.getClass() == Brick.class) {
 				 mask = mask | BRICK_CONTACT;
@@ -141,21 +155,50 @@ public class GameField implements ContactListener {
 				 mask = mask | BRICK_CONTACT;
 				 bumpedBrick = (Brick)bodyB;
 			}
-			processContact(mask);
+			processBeginContact();
 		}	
 	}
 	
-	public void processContact(int mask) {
-		if (mask == 3) processBallAndVausContact();
-		if (mask == 5) processBallAndBrickContact();
+	public void processBeginContact() {
+		if (mask == 3) {
+			processBallAndVausContact();
+			return;
+		}
+		if (mask == 9) {
+			processBallAndBorderContact();
+			return;
+		}
 	}
 	
+	private void processBallAndBorderContact() {
+		getWorldListener().processBallAndBorderContact();
+	}
+
 	public void processBallAndVausContact() {
-		getWorldListener().processBallAndVausContact();;
+		getWorldListener().processBallAndVausContact();
 	}
 	
-	public void processBallAndBrickContact() {
+	public void processBallAndBrickContact() {	
+		if (bumpedBrick.hit()) removeBrick(bumpedBrick);
 		getWorldListener().processBallAndBrickContact();
+	}
+	
+	public void removeBrick(Brick brick) {
+		step(1);
+		if(!world.isLocked()) {			
+			if (brick != null) {
+				brick.getBody().setUserData(null);				
+				//to prevent some obscure c assertion that happened randomly once in a blue moon
+			    final Array<JointEdge> list = brick.getBody().getJointList();
+			    for (JointEdge edge : list) {
+			        world.destroyJoint(edge.joint);
+			    }
+			    // actual remove
+			    this.world.destroyBody(brick.getBody());
+				this.bricks.remove(brick);
+				brick = null;
+			}
+		}
 	}
 
 	@Override
@@ -169,19 +212,17 @@ public class GameField implements ContactListener {
 
 	@Override
 	public void postSolve(Contact contact, ContactImpulse impulse) {
-		//this.bricks.remove(bumpedBrick);
-		//if (bumpedBrick != null)
-		//this.world.destroyBody(bumpedBrick.getBody());
-		//this.bumpedBrick = null;
+		if (mask == 5) processBallAndBrickContact();
+		mask = 0;
 	}
 	
 	public void vausMove(float moveX) {
 		Vector2 velocity = new Vector2(moveX, 0);
 		if ((this.vaus.getBody().getPosition().x - this.vaus.width / 2) <= 0) {
-			velocity = new Vector2(60, 0);
+			velocity = new Vector2(100, 0);
 		}
 		if ((this.vaus.getBody().getPosition().x + this.vaus.width / 2) >= WORLD_WIDTH) {
-			velocity = new Vector2(-60, 0);
+			velocity = new Vector2(-100, 0);
 		}
 		this.vaus.getBody().setLinearVelocity(velocity);
 	}

@@ -6,6 +6,7 @@ public class Border extends PhysicalObject {
 
 	public Border(World world) {
 		super.setBody(BodyFactory.createBorder(world));
-		getBody().setActive(true);
+		//getBody().setActive(true);
+		getBody().setUserData(this);
 	}
 }

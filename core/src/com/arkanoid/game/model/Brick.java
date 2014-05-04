@@ -1,13 +1,12 @@
 package com.arkanoid.game.model;
 
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 
 public class Brick extends PhysicalObject {
 	
 	private final int resistance;
 	private final float kick;
+	public int life; 
 	public final float width;
 	public final float heigth;
 	public final Property property;
@@ -17,16 +16,17 @@ public class Brick extends PhysicalObject {
 	}
 	
 	public Brick(World world, float x, float y, float width, float height) {
-		this(world, x, y, width, height, 1, 1, Property.DEFAULT);
+		this(world, x, y, width, height, 1, 1, 2, Property.DEFAULT);
 	}
 	
 	public Brick(World world, float x, float y, float width, float height, Property property) {
-		this(world, x, y, width, height, 1, 1, property);
+		this(world, x, y, width, height, 1, 1, 2, property);
 	}
 
-	public Brick(World world, float x, float y, float width, float height, int resistance, float kick, Property property) {
+	public Brick(World world, float x, float y, float width, float height, int resistance, float kick, int life, Property property) {
 		this.resistance = resistance;
 		this.kick = kick;
+		this.life = life;
 		this.property = property;
 		this.width = width;
 		this.heigth = height;
@@ -41,5 +41,19 @@ public class Brick extends PhysicalObject {
 	public boolean impact(Ball ball) {
 		ball.getBody().applyAngularImpulse(0, false);
 		return false;
+	}
+	
+	public int getLife() {
+		return life;
+	}
+	
+	public boolean hit() {
+		life--;
+		if (life <= 0) return true;
+		return false;
+	}
+	
+	public void destroyUserData() {
+		getBody().setUserData(null);		
 	}
 }

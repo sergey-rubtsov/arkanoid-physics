@@ -104,6 +104,7 @@ public class GLShapeRenderer extends ShapeRenderer {
 		}
 	}
 	
+	//TODO fix method:
 	public void drawConvexQuadrangle(PolygonShape shape, Color color) {
 		if (shape.getVertexCount() != 4) throw new IllegalArgumentException("Tetragon must contain 4 points.");		
 		setColor(color);

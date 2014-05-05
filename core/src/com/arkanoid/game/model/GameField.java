@@ -30,6 +30,7 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.JointEdge;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.WorldManifold;
 import com.badlogic.gdx.utils.Array;
 
 public class GameField implements ContactListener {
@@ -54,6 +55,7 @@ public class GameField implements ContactListener {
 	public static final int WORLD_HEIGHT = Gdx.graphics.getHeight();
 	public static final int VAUS_WIDTH = WORLD_WIDTH / 5;	
 	public static final int VAUS_HEIGHT = WORLD_HEIGHT / 40;
+	public static final int VAUS_Y_POS = WORLD_HEIGHT / 40;
 	
 	public static final int BRICK_WIDTH = WORLD_WIDTH / 10;	
 	public static final int BRICK_HEIGHT = WORLD_HEIGHT / 30;
@@ -63,7 +65,7 @@ public class GameField implements ContactListener {
 	public static final int WORLD_STATE_RUNNING = 0;
 	public static final int WORLD_STATE_NEXT_LEVEL = 1;
 	public static final int WORLD_STATE_GAME_OVER = 2;
-	public static final Vector2 gravity = new Vector2(0, -9.81f);
+	public static final Vector2 gravity = new Vector2(0, -10);
 	
 	WorldListener listener;
 	public final Random rand;
@@ -78,15 +80,17 @@ public class GameField implements ContactListener {
 	private final Ball ball;
 	private final Border border;
 	private List<Brick> bricks;
+
 	private Brick bumpedBrick;
 	private int mask;
 
 	public GameField(WorldListener listener) {
 		this.world = new World(Const.gravity, true);
 		this.world.setContactListener(this);
-		this.vaus = new Vaus(world, WORLD_WIDTH / 2, 50, VAUS_WIDTH, VAUS_HEIGHT);
+		this.vaus = new Vaus(world, WORLD_WIDTH / 2, VAUS_Y_POS, VAUS_WIDTH, VAUS_HEIGHT);
 		this.ball = new Ball(world, WORLD_WIDTH / 2, 300, BALL_RADIUS);
 		this.border = new Border(world);
+		BodyFactory.createBorder(world, new Vector2[]{new Vector2(1, 1), new Vector2(WORLD_WIDTH - 1, 1)});
 		this.bumpedBrick = null;
 		this.mask = 0;
 		this.bricks = new ArrayList<Brick>();
@@ -111,7 +115,7 @@ public class GameField implements ContactListener {
 	}
 	
 	public void step(int iters) {
-		//float dt = (Gdx.graphics.getDeltaTime() * 3000 / 1000.0f) / iters;
+		//float dt = Gdx.graphics.getDeltaTime() / iters;
 		float dt = 1 / 60f;
 		for (int i = 0; i < iters; i++) {
 			world.step(dt, 10, 10);			
@@ -160,10 +164,6 @@ public class GameField implements ContactListener {
 	}
 	
 	public void processBeginContact() {
-		if (mask == 3) {
-			processBallAndVausContact();
-			return;
-		}
 		if (mask == 9) {
 			processBallAndBorderContact();
 			return;
@@ -174,7 +174,12 @@ public class GameField implements ContactListener {
 		getWorldListener().processBallAndBorderContact();
 	}
 
-	public void processBallAndVausContact() {
+	public void processBallAndVausContact(Contact contact) {
+		WorldManifold wm = contact.getWorldManifold();
+		Vector2 normal = wm.getNormal();
+		normal.x = normal.x + 10;
+		normal.y = normal.y + 10;
+		ball.getBody().applyLinearImpulse(normal, ball.getBody().getPosition(), true);
 		getWorldListener().processBallAndVausContact();
 	}
 	
@@ -212,12 +217,20 @@ public class GameField implements ContactListener {
 
 	@Override
 	public void postSolve(Contact contact, ContactImpulse impulse) {
-		if (mask == 5) processBallAndBrickContact();
+		switch (mask) {
+		case 3:
+			processBallAndVausContact(contact);
+			break;
+		case 5:
+			processBallAndBrickContact();
+			break;
+		} 
 		mask = 0;
 	}
 	
-	public void vausMove(float moveX) {
+	public void vausMove(float moveX, float moveY) {
 		Vector2 velocity = new Vector2(moveX, 0);
+		Vector2 impulse = new Vector2(0, moveY);
 		if ((this.vaus.getBody().getPosition().x - this.vaus.width / 2) <= 0) {
 			velocity = new Vector2(100, 0);
 		}
@@ -225,6 +238,12 @@ public class GameField implements ContactListener {
 			velocity = new Vector2(-100, 0);
 		}
 		this.vaus.getBody().setLinearVelocity(velocity);
+		if (this.vaus.getBody().getPosition().y < VAUS_Y_POS * 2 && moveY > 0) {
+			this.vaus.getBody().setLinearVelocity(impulse);
+		}
+		if (this.vaus.getBody().getPosition().y > VAUS_Y_POS / 2 && moveY < 0) {
+			this.vaus.getBody().setLinearVelocity(impulse);
+		}		
 	}
 	
 	public void changeGravity(float accelX, float accelY) {
@@ -255,5 +274,9 @@ public class GameField implements ContactListener {
 
 	public void setWorld(World world) {
 		this.world = world;
+	}
+	
+	public List<Brick> getBricks() {
+		return bricks;
 	}
 }

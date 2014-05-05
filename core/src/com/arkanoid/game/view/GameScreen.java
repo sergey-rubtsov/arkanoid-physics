@@ -82,7 +82,7 @@ public class GameScreen implements Screen {
 
 			@Override
 			public void gameEnded() {
-				Assets.playSound(Assets.hitSound);
+				Assets.playSound(Assets.endSound);
 			}
 
 			@Override
@@ -126,7 +126,7 @@ public class GameScreen implements Screen {
 			guiCam.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
 
 			if (pauseBounds.contains(touchPoint.x, touchPoint.y)) {
-				Assets.playSound(Assets.pauseSound);
+				Assets.playSound(Assets.menuSound);
 				state = GAME_PAUSED;
 				return;
 			}
@@ -138,15 +138,18 @@ public class GameScreen implements Screen {
 			field.changeGravity(Gdx.input.getAccelerometerX(), Gdx.input.getAccelerometerY());
 		} else {
 			float moveX = 0;
+			float moveY = 0;
 			if (Gdx.input.isKeyPressed(Keys.DPAD_LEFT)) moveX = -60f;
 			if (Gdx.input.isKeyPressed(Keys.DPAD_RIGHT)) moveX = 60f;
+			if (Gdx.input.isKeyPressed(Keys.DPAD_UP)) moveY = 60f;
+			if (Gdx.input.isKeyPressed(Keys.DPAD_DOWN)) moveY = -60f;
 			float accelX = 0;
 			float accelY = 0;
 			if (Gdx.input.isKeyPressed(Keys.A)) accelX = 5f;
 			if (Gdx.input.isKeyPressed(Keys.D)) accelX = -5f;
 			if (Gdx.input.isKeyPressed(Keys.W)) accelY = 5f;
 			if (Gdx.input.isKeyPressed(Keys.S)) accelY = -5f;
-			field.vausMove(moveX);			
+			field.vausMove(moveX, moveY);			
 			field.changeGravity(accelX, accelY);
 		}
 		if (field.state == GameField.WORLD_STATE_NEXT_LEVEL) {
@@ -161,12 +164,12 @@ public class GameScreen implements Screen {
 		if (Gdx.input.justTouched()) {
 			guiCam.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
 			if (resumeBounds.contains(touchPoint.x, touchPoint.y)) {
-				Assets.playSound(Assets.clickSound);
+				Assets.playSound(Assets.menu0Sound);
 				state = GAME_RUNNING;
 				return;
 			}
 			if (quitBounds.contains(touchPoint.x, touchPoint.y)) {
-				Assets.playSound(Assets.clickSound);
+				Assets.playSound(Assets.pauseSound);
 				game.setScreen(new MainMenuScreen(game));
 				return;
 			}
@@ -190,15 +193,19 @@ public class GameScreen implements Screen {
 		GL20 gl = Gdx.gl;
 		gl.glClearColor(0, 0, 1, 1);
 		gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		batcher.renderBackground();
+		batcher.renderBall(field.getBall());
+		batcher.renderBricks(field.getBricks());
+		batcher.renderVaus(field.getVaus());
 		debugRenderer.render(field.getWorld(), guiCam.combined);
+		
 		//renderer.render(field.getWorld(), guiCam.combined);
 		//renderer.fillRectangle(field.getVaus().getRectangle());
-		//TODO fix method:
-		//renderer.drawConvexQuadrangle(field.getVaus().getShape(), renderer.RECCOLOR);
+		
 		guiCam.update();
 		batcher.setProjectionMatrix(guiCam.combined);
 		batcher.enableBlending();
-		batcher.begin();
+		batcher.begin();		
 		
 		switch (state) {
 		case GAME_RUNNING:

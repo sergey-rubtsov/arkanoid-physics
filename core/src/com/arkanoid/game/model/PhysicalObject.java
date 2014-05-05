@@ -30,4 +30,8 @@ public abstract class PhysicalObject {
 	public float getYPos() {
 		return this.body.getPosition().y;
 	}
+	
+	public abstract float getBottomLeftXPos();
+	
+	public abstract float getBottomLeftYPos();
 }

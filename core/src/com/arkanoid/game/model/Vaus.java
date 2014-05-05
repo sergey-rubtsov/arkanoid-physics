@@ -10,11 +10,11 @@ public class Vaus extends PhysicalObject {
 	
 	public final Rectangle rectangle;
 	public final float width;
-	public final float heigth;
+	public final float height;
 	
 	public Vaus(World world, float x, float y, float width, float height) {
 		this.width = width;
-		this.heigth = height;
+		this.height = height;
 		this.rectangle = new Rectangle(x - width, y - height, width, height);
 		super.setBody(BodyFactory.createKinematicRectangle(world, x, y, width, height));
 		getBody().setActive(true);
@@ -28,7 +28,17 @@ public class Vaus extends PhysicalObject {
 	
 	public Rectangle getRectangle() {
 		rectangle.x = super.getXPos() - this.width;
-		rectangle.y = super.getYPos() - this.heigth;
+		rectangle.y = super.getYPos() - this.height;
 		return rectangle;
+	}
+	
+	@Override
+	public float getBottomLeftXPos() {
+		return getXPos() - (width / 2);
+	}
+
+	@Override
+	public float getBottomLeftYPos() {
+		return getYPos() - (height / 2);
 	}
 }

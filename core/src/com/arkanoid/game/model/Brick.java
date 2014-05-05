@@ -8,7 +8,7 @@ public class Brick extends PhysicalObject {
 	private final float kick;
 	public int life; 
 	public final float width;
-	public final float heigth;
+	public final float height;
 	public final Property property;
 	
 	public enum Property {
@@ -29,18 +29,13 @@ public class Brick extends PhysicalObject {
 		this.life = life;
 		this.property = property;
 		this.width = width;
-		this.heigth = height;
+		this.height = height;
 		super.setBody(BodyFactory.createStaticRectangle(world, x, y, width, height));
 		getBody().setUserData(this);
 	}
 
 	public int getResistance() {
 		return resistance;
-	}
-	
-	public boolean impact(Ball ball) {
-		ball.getBody().applyAngularImpulse(0, false);
-		return false;
 	}
 	
 	public int getLife() {
@@ -55,5 +50,15 @@ public class Brick extends PhysicalObject {
 	
 	public void destroyUserData() {
 		getBody().setUserData(null);		
+	}
+
+	@Override
+	public float getBottomLeftXPos() {
+		return getXPos() - (width / 2);
+	}
+
+	@Override
+	public float getBottomLeftYPos() {
+		return getYPos() - (height / 2);
 	}
 }

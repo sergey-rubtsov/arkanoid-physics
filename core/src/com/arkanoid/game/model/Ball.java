@@ -26,4 +26,14 @@ public class Ball extends PhysicalObject {
 	public float getRadius() {
 		return radius;
 	}
+
+	@Override
+	public float getBottomLeftXPos() {
+		return getXPos() - radius;
+	}
+
+	@Override
+	public float getBottomLeftYPos() {
+		return getYPos() - radius;
+	}
 }

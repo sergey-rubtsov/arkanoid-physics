@@ -1,7 +1,12 @@
 package com.arkanoid.game.utils;
 
+import java.util.List;
+
 import com.arkanoid.game.Assets;
+import com.arkanoid.game.model.Ball;
+import com.arkanoid.game.model.Brick;
 import com.arkanoid.game.model.GameField;
+import com.arkanoid.game.model.PhysicalObject;
 import com.arkanoid.game.model.Vaus;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -11,7 +16,7 @@ public class SpriteBatcher extends SpriteBatch {
 	public SpriteBatcher() {
 	}
 	
-	public void renderBackground () {
+	public void renderBackground() {
 		disableBlending();
 		begin();
 		draw(Assets.backgroundRegion, 0, 0, GameField.WORLD_WIDTH,
@@ -24,6 +29,36 @@ public class SpriteBatcher extends SpriteBatch {
 		TextureRegion vausFrame = Assets.defaultVaus;		
 		begin();
 		draw(vausFrame, x, y, width, height);
+		end();	
+	}
+	
+	public void renderBall(Ball ball) {
+		enableBlending();
+		TextureRegion vausFrame = Assets.defaultBall;		
+		begin();
+		draw(vausFrame, ball.getBottomLeftXPos(), ball.getBottomLeftYPos(), ball.getRadius() * 2, ball.getRadius() * 2);
+		end();		
+	}
+	
+	public void renderBricks(List<Brick> bricks) {
+		for (Brick brick : bricks) {
+			renderBrick(brick);
+		}
+	}
+	
+	public void renderBrick(Brick brick) {
+		enableBlending();
+		TextureRegion vausFrame = Assets.defaultBrick;		
+		begin();
+		draw(vausFrame, brick.getBottomLeftXPos(), brick.getBottomLeftYPos(), brick.width, brick.height);
+		end();		
+	}
+	
+	public void renderVaus(Vaus vaus) {
+		enableBlending();
+		TextureRegion vausFrame = Assets.defaultVaus;		
+		begin();
+		draw(vausFrame, vaus.getBottomLeftXPos(), vaus.getBottomLeftYPos(), vaus.width, vaus.height);
 		end();	
 	}
 	

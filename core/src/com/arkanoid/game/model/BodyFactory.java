@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -14,7 +15,7 @@ import com.badlogic.gdx.physics.box2d.World;
 public class BodyFactory {
 
 	/** Creates a circle object with the given position and radius. Resitution defaults to 0.6. */
-	public static Body createCircle(World world, float x, float y, float radius, boolean isStatic) {
+	public static Body createCircle(World world, float x, float y, float radius, BodyDef.BodyType type) {
 		CircleShape sd = new CircleShape();
 		sd.setRadius(radius);
 
@@ -31,15 +32,42 @@ public class BodyFactory {
 		Body body = world.createBody(bd);
 		
 		body.createFixture(fdef);
-		if (isStatic) {
-			body.setType(BodyDef.BodyType.StaticBody);
-		} else {
-			body.setType(BodyDef.BodyType.DynamicBody);
-		}
+		body.setType(type);
+
 		//body.setActive(true);
 		
 		sd.dispose();		
 		return body;
+	}
+	
+	public static Body createVaus(World world, float x, float y, float width, float height) {
+		BodyDef bd = new BodyDef();
+		bd.position.set(x, y);
+		bd.type = BodyDef.BodyType.KinematicBody;		
+		
+		Body vaus = world.createBody(bd);
+		
+		PolygonShape polygon = new PolygonShape();		
+		polygon.setAsBox(width / 2, height / 2);
+		Fixture center = vaus.createFixture(polygon, 1);
+		center.setFriction(1);
+		
+		CircleShape leftSide = new CircleShape();
+		CircleShape rightSide = new CircleShape();
+		leftSide.setRadius(height / 2);
+		rightSide.setRadius(height / 2);
+		leftSide.setPosition(new Vector2(-width / 2 + height / 4, 0));
+		rightSide.setPosition(new Vector2(width / 2 - height / 4, 0));
+		
+		Fixture left = vaus.createFixture(leftSide, 1);		
+		Fixture right = vaus.createFixture(rightSide, 1);
+		left.setFriction(0.1f);
+		right.setFriction(0.1f);
+		
+		polygon.dispose();
+		rightSide.dispose();
+		leftSide.dispose();
+		return vaus;
 	}
 
 	public static Body createKinematicRectangle(World world, float x, float y, float width, float height) {

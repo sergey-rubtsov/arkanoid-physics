@@ -23,7 +23,6 @@ import java.util.Random;
 import com.arkanoid.game.utils.Const;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
@@ -106,6 +105,11 @@ public class GameField implements ContactListener {
 		for (int i = 0; i < 9; i++) {
 			bricks.add(new Brick(this.world, WORLD_WIDTH / 10 + (WORLD_WIDTH / 10 * i), 400, BRICK_WIDTH, BRICK_HEIGHT));
 		}
+		launchBall();
+	}
+	
+	public void launchBall() {
+		ball.getBody().setLinearVelocity(new Vector2(0, -10));
 	}
 	
 	public void step() {

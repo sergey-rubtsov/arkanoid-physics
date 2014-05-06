@@ -21,7 +21,6 @@ import com.arkanoid.game.model.GameField.WorldListener;
 import com.arkanoid.game.model.GameField;
 import com.arkanoid.game.utils.Const;
 import com.arkanoid.game.utils.GLShapeRenderer;
-import com.arkanoid.game.utils.GameRendering;
 import com.arkanoid.game.utils.SpriteBatcher;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Input.Keys;
@@ -234,7 +233,7 @@ public class GameScreen implements Screen {
 		draw();
 	}
 	
-	public void update () {
+	public void update() {
 		switch (state) {
 		case GAME_RUNNING:
 			updateRunning();
@@ -255,28 +254,28 @@ public class GameScreen implements Screen {
 	}
 
 	@Override
-	public void resize (int width, int height) {
+	public void resize(int width, int height) {
 	}
 
 	@Override
-	public void show () {
+	public void show() {
 	}
 
 	@Override
-	public void hide () {
+	public void hide() {
 	}
 
 	@Override
-	public void pause () {
+	public void pause() {
 		//if (state == GAME_RUNNING) state = GAME_PAUSED;
 	}
 
 	@Override
-	public void resume () {
+	public void resume() {
 	}
 
 	@Override
-	public void dispose () {
+	public void dispose() {
 		batcher.dispose();
 		renderer.dispose();;
 		debugRenderer.dispose();

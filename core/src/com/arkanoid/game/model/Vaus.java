@@ -15,8 +15,8 @@ public class Vaus extends PhysicalObject {
 	public Vaus(World world, float x, float y, float width, float height) {
 		this.width = width;
 		this.height = height;
-		this.rectangle = new Rectangle(x - width, y - height, width, height);
-		super.setBody(BodyFactory.createKinematicRectangle(world, x, y, width, height));
+		this.rectangle = new Rectangle(x - width, y - height, width, height);		
+		super.setBody(BodyFactory.createVaus(world, x, y, width, height));
 		getBody().setActive(true);
 		getBody().setBullet(true);
 		getBody().setUserData(this);

@@ -8,8 +8,10 @@ import com.arkanoid.game.model.Brick;
 import com.arkanoid.game.model.GameField;
 import com.arkanoid.game.model.PhysicalObject;
 import com.arkanoid.game.model.Vaus;
+import com.arkanoid.game.view.GameScreen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 
 public class SpriteBatcher extends SpriteBatch {
 	
@@ -72,7 +74,7 @@ public class SpriteBatcher extends SpriteBatch {
 
 	public void presentPaused() {
 		draw(Assets.pauseMenu, 160 - 192 / 2, 240 - 96 / 2, 192, 96);
-		//Assets.font.draw(batcher, scoreString, 16, 480 - 20);
+		//Assets.font.draw(this, "test", 16, 480 - 20);
 	}
 
 	public void presentLevelEnd() {

@@ -39,7 +39,7 @@ public class MainMenuScreen implements Screen {
 	Rectangle helpBounds;
 	Vector3 touchPoint;  
 
-	public MainMenuScreen (Game game) {
+	public MainMenuScreen(Game game) {
 		this.game = game;
 
 		guiCam = new OrthographicCamera(320, 480);
@@ -52,17 +52,17 @@ public class MainMenuScreen implements Screen {
 		touchPoint = new Vector3();
 	}
 
-	public void update () {
+	public void update() {
 		if (Gdx.input.justTouched()) {
 			guiCam.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
 
 			if (playBounds.contains(touchPoint.x, touchPoint.y)) {
-				Assets.playSound(Assets.clickSound);
+				Assets.playSound(Assets.menu0Sound);
 				game.setScreen(new GameScreen(game));
 				return;
 			}
 			if (soundBounds.contains(touchPoint.x, touchPoint.y)) {
-				Assets.playSound(Assets.clickSound);
+				Assets.playSound(Assets.menuSound);
 				Settings.soundEnabled = !Settings.soundEnabled;
 				if (Settings.soundEnabled)
 					Assets.music.play();
@@ -74,7 +74,7 @@ public class MainMenuScreen implements Screen {
 
 	long last = TimeUtils.nanoTime();
 
-	public void draw () {
+	public void draw() {
 		GL20 gl = Gdx.gl;
 		gl.glClearColor(1, 0, 0, 1);
 		gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -105,33 +105,33 @@ public class MainMenuScreen implements Screen {
 	}
 
 	@Override
-	public void render (float delta) {
+	public void render(float delta) {
 		update();
 		draw();
 	}
 
 	@Override
-	public void resize (int width, int height) {
+	public void resize(int width, int height) {
 	}
 
 	@Override
-	public void show () {
+	public void show() {
 	}
 
 	@Override
-	public void hide () {
+	public void hide() {
 	}
 
 	@Override
-	public void pause () {
+	public void pause() {
 		Settings.save();
 	}
 
 	@Override
-	public void resume () {
+	public void resume() {
 	}
 
 	@Override
-	public void dispose () {
+	public void dispose() {
 	}
 }

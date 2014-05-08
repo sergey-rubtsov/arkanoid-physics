@@ -52,8 +52,6 @@ public class Assets {
 	public static BitmapFont font;
 
 	public static Music music;
-	public static Sound hitSound;
-	public static Sound clickSound;
 	
 	public static Sound reboundSound;
 	public static Sound vausSound;
@@ -91,7 +89,7 @@ public class Assets {
 		backgroundRegion = new TextureRegion(background, 0, 0, 320, 480);
 
 		items = loadTexture("data/items.png");
-		//mainMenu = new TextureRegion(items, 0, 224, 300, 110);
+
 		mainMenu = new TextureRegion(items, 0, 224, 300, 110);
 		pauseMenu = new TextureRegion(items, 224, 128, 192, 96);
 		ready = new TextureRegion(items, 320, 224, 192, 32);
@@ -105,12 +103,10 @@ public class Assets {
 		
 		font = new BitmapFont(Gdx.files.internal("data/font.fnt"), Gdx.files.internal("data/font.png"), false);
 
-		//music = Gdx.audio.newMusic(Gdx.files.internal("data/sounds/music.mp3"));
-		//music.setLooping(true);
-		//music.setVolume(0.5f);
+		music = Gdx.audio.newMusic(Gdx.files.internal("data/sounds/music.mp3"));
+		music.setLooping(true);
+		music.setVolume(0.1f);
 		//if (Settings.soundEnabled) music.play();
-		hitSound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/hit.wav"));
-		clickSound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/click.wav"));
 		
 		reboundSound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/rebound.wav"));
 		vausSound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/vaus.wav"));
@@ -123,10 +119,13 @@ public class Assets {
 		fail0Sound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/fail0.wav"));
 		failSound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/fail.wav"));
 		
+		menu0Sound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/menu0.wav"));
+		menuSound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/menu.wav"));
+		
 		pauseSound = Gdx.audio.newSound(Gdx.files.internal("data/sounds/pause.wav"));
 	}
 
-	public static void playSound (Sound sound) {
+	public static void playSound(Sound sound) {
 		if (Settings.soundEnabled) sound.play(1);
 	}
 }

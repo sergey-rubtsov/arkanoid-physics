@@ -19,7 +19,6 @@ package com.arkanoid.game.view;
 import com.arkanoid.game.Assets;
 import com.arkanoid.game.model.GameField.WorldListener;
 import com.arkanoid.game.model.GameField;
-import com.arkanoid.game.utils.Const;
 import com.arkanoid.game.utils.GLShapeRenderer;
 import com.arkanoid.game.utils.SpriteBatcher;
 import com.badlogic.gdx.Application.ApplicationType;
@@ -39,6 +38,8 @@ public class GameScreen implements Screen {
 	static final int GAME_PAUSED = 2;
 	static final int GAME_LEVEL_END = 3;
 	static final int GAME_OVER = 4;
+	public static final int WORLD_WIDTH = Gdx.graphics.getWidth();
+	public static final int WORLD_HEIGHT = Gdx.graphics.getHeight();
 
 	Game game;
 
@@ -47,15 +48,14 @@ public class GameScreen implements Screen {
 	Vector3 touchPoint;
 	SpriteBatcher batcher;
 	GLShapeRenderer renderer;
-	Box2DDebugRenderer debugRenderer;
-	
+	Box2DDebugRenderer debugRenderer;	
 	
 	GameField field;
 	WorldListener worldListener;
 	
-	Rectangle pauseBounds;
-	Rectangle resumeBounds;
-	Rectangle quitBounds;
+	private Rectangle pauseBounds;
+	public Rectangle resumeBounds;
+	public Rectangle quitBounds;
 	int lastScore;
 	String scoreString;
 
@@ -63,8 +63,8 @@ public class GameScreen implements Screen {
 		this.game = game;
 
 		state = GAME_READY;
-		guiCam = new OrthographicCamera(Const.WORLD_WIDTH, Const.WORLD_HEIGHT);
-		guiCam.position.set(Const.WORLD_WIDTH / 2, Const.WORLD_HEIGHT / 2, 0);
+		guiCam = new OrthographicCamera(WORLD_WIDTH, WORLD_HEIGHT);
+		guiCam.position.set(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, 0);
 		touchPoint = new Vector3();
 		batcher = new SpriteBatcher();
 		renderer = new GLShapeRenderer();
@@ -107,7 +107,12 @@ public class GameScreen implements Screen {
 		};
 		field = new GameField(worldListener);
 		
-		pauseBounds = new Rectangle(320 - 64, 480 - 64, 64, 64);
+		//pauseBounds = new Rectangle(WORLD_WIDTH - WORLD_WIDTH / 5, WORLD_HEIGHT , WORLD_WIDTH / 5, WORLD_HEIGHT / 5);
+		//resumeBounds = new Rectangle(WORLD_WIDTH / 2 - WORLD_WIDTH * 3 / 10, 240, 192, 36);
+		//quitBounds = new Rectangle(160 - 96, 240 - 36, 192, 36);
+		
+
+ 		pauseBounds = new Rectangle(320 - 64, 480 - 64, 64, 64);
 		resumeBounds = new Rectangle(160 - 96, 240, 192, 36);
 		quitBounds = new Rectangle(160 - 96, 240 - 36, 192, 36);
 		lastScore = 0;
@@ -280,5 +285,9 @@ public class GameScreen implements Screen {
 		renderer.dispose();;
 		debugRenderer.dispose();
 		field.getWorld().dispose();
+	}
+
+	public Rectangle getPauseBounds() {
+		return pauseBounds;
 	}
 }

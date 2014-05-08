@@ -1,5 +1,9 @@
 package com.arkanoid.game.model;
 
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
 public class Brick extends PhysicalObject {
@@ -10,6 +14,9 @@ public class Brick extends PhysicalObject {
 	public final float width;
 	public final float height;
 	public final Property property;
+	
+	//0100 in binary
+	final public static short CATEGORY_BRICK = 0x0004;
 	
 	public enum Property {
 		DISAPPEARS, FALLS, EXPLODES, GELATIN, DEFAULT
@@ -30,7 +37,7 @@ public class Brick extends PhysicalObject {
 		this.property = property;
 		this.width = width;
 		this.height = height;
-		super.setBody(BodyFactory.createStaticRectangle(world, x, y, width, height));
+		super.setBody(createBrick(world, x, y, width, height));
 		getBody().setUserData(this);
 	}
 
@@ -60,5 +67,29 @@ public class Brick extends PhysicalObject {
 	@Override
 	public float getBottomLeftYPos() {
 		return getYPos() - (height / 2);
+	}
+	
+	public static Body createBrick(World world, float x, float y,
+			float width, float height) {
+		BodyDef bd = new BodyDef();
+		bd.position.set(x, y);
+		bd.type = BodyDef.BodyType.StaticBody;		
+		
+		PolygonShape shape = new PolygonShape();
+		shape.setAsBox(width / 2, height / 2);
+
+		FixtureDef fdef = new FixtureDef();
+		fdef.shape = shape;
+		fdef.restitution = 10f;
+		fdef.friction = 1f;
+		fdef.filter.categoryBits = CATEGORY_BRICK;
+		fdef.filter.maskBits = ContactFilter.MASK_BRICK;
+		
+		Body rectangle = world.createBody(bd);
+		
+		rectangle.createFixture(fdef);
+		
+		shape.dispose();
+		return rectangle;
 	}
 }

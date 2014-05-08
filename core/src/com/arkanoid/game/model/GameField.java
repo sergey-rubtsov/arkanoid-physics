@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.arkanoid.game.utils.Const;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Contact;
@@ -64,7 +63,7 @@ public class GameField implements ContactListener {
 	public static final int WORLD_STATE_RUNNING = 0;
 	public static final int WORLD_STATE_NEXT_LEVEL = 1;
 	public static final int WORLD_STATE_GAME_OVER = 2;
-	public static final Vector2 gravity = new Vector2(0, -10);
+	public static final Vector2 gravity = new Vector2(0, 0);
 	
 	WorldListener listener;
 	public final Random rand;
@@ -81,17 +80,17 @@ public class GameField implements ContactListener {
 	private List<Brick> bricks;
 
 	private Brick bumpedBrick;
-	private int mask;
+	private int contactMask;
 
 	public GameField(WorldListener listener) {
-		this.world = new World(Const.gravity, true);
+		this.world = new World(GameField.gravity, true);
 		this.world.setContactListener(this);
 		this.vaus = new Vaus(world, WORLD_WIDTH / 2, VAUS_Y_POS, VAUS_WIDTH, VAUS_HEIGHT);
 		this.ball = new Ball(world, WORLD_WIDTH / 2, 300, BALL_RADIUS);
 		this.border = new Border(world);
-		BodyFactory.createBorder(world, new Vector2[]{new Vector2(1, 1), new Vector2(WORLD_WIDTH - 1, 1)});
+		Border.createBorder(world, new Vector2[]{new Vector2(1, 1), new Vector2(WORLD_WIDTH - 1, 1)}, 10f, 0f);
 		this.bumpedBrick = null;
-		this.mask = 0;
+		this.contactMask = 0;
 		this.bricks = new ArrayList<Brick>();
 		buildScene();
 		
@@ -102,14 +101,17 @@ public class GameField implements ContactListener {
 	}
 	
 	public void buildScene() {
-		for (int i = 0; i < 9; i++) {
-			bricks.add(new Brick(this.world, WORLD_WIDTH / 10 + (WORLD_WIDTH / 10 * i), 400, BRICK_WIDTH, BRICK_HEIGHT));
+		for (int i = 0; i < 10; i++) {
+			for (int j = 0; j < 10; j++) {
+				bricks.add(new Brick(this.world, BRICK_WIDTH / 2 + WORLD_WIDTH / 10 * j, WORLD_HEIGHT - BRICK_HEIGHT / 2 - BRICK_HEIGHT * i, BRICK_WIDTH, BRICK_HEIGHT));
+			}			
 		}
 		launchBall();
 	}
 	
 	public void launchBall() {
-		ball.getBody().setLinearVelocity(new Vector2(0, -10));
+		//ball.getBody().setLinearVelocity(new Vector2(0, -50));
+		ball.getBody().applyLinearImpulse(new Vector2(0, -10000), ball.getBody().getPosition(), true);		
 	}
 	
 	public void step() {
@@ -146,21 +148,21 @@ public class GameField implements ContactListener {
 		Object bodyA = contact.getFixtureA().getBody().getUserData();
 		Object bodyB = contact.getFixtureB().getBody().getUserData();
 		if (bodyA != null && bodyB != null) {
-			mask = 0;
+			contactMask = 0;
 			if (bodyA.getClass() == Ball.class || bodyB.getClass() == Ball.class) {
-				 mask = mask | BALL_CONTACT;			
+				 contactMask = contactMask | BALL_CONTACT;			
 			}
 			if (bodyA.getClass() == Vaus.class || bodyB.getClass() == Vaus.class) {
-				 mask = mask | VAUS_CONTACT;			
+				 contactMask = contactMask | VAUS_CONTACT;			
 			}
 			if (bodyA.getClass() == Border.class || bodyB.getClass() == Border.class) {
-				 mask = mask | BORDER_CONTACT;			
+				 contactMask = contactMask | BORDER_CONTACT;			
 			}
 			if (bodyA.getClass() == Brick.class) {
-				 mask = mask | BRICK_CONTACT;
+				 contactMask = contactMask | BRICK_CONTACT;
 				 bumpedBrick = (Brick)bodyA;
 			} else if (bodyB.getClass() == Brick.class) {
-				 mask = mask | BRICK_CONTACT;
+				 contactMask = contactMask | BRICK_CONTACT;
 				 bumpedBrick = (Brick)bodyB;
 			}
 			processBeginContact();
@@ -168,7 +170,7 @@ public class GameField implements ContactListener {
 	}
 	
 	public void processBeginContact() {
-		if (mask == 9) {
+		if (contactMask == 9) {
 			processBallAndBorderContact();
 			return;
 		}
@@ -181,9 +183,13 @@ public class GameField implements ContactListener {
 	public void processBallAndVausContact(Contact contact) {
 		WorldManifold wm = contact.getWorldManifold();
 		Vector2 normal = wm.getNormal();
-		normal.x = normal.x + 10;
-		normal.y = normal.y + 10;
-		ball.getBody().applyLinearImpulse(normal, ball.getBody().getPosition(), true);
+		normal.x = normal.x * 1000000;
+		normal.y = normal.y * 1000000;
+		for (int i = 0; i < 10; i++) {
+			world.step(1 / 60f, 10, 10);
+			ball.getBody().applyLinearImpulse(normal, ball.getBody().getPosition(), true);
+		}
+		
 		getWorldListener().processBallAndVausContact();
 	}
 	
@@ -221,7 +227,7 @@ public class GameField implements ContactListener {
 
 	@Override
 	public void postSolve(Contact contact, ContactImpulse impulse) {
-		switch (mask) {
+		switch (contactMask) {
 		case 3:
 			processBallAndVausContact(contact);
 			break;
@@ -229,7 +235,7 @@ public class GameField implements ContactListener {
 			processBallAndBrickContact();
 			break;
 		} 
-		mask = 0;
+		contactMask = 0;
 	}
 	
 	public void vausMove(float moveX, float moveY) {
@@ -254,7 +260,7 @@ public class GameField implements ContactListener {
 		//this.world.setGravity(new Vector2(accelX, accelY));
 	}
 
-	private void checkGameOver () {
+	private void checkGameOver() {
 /*		if (true) {
 			state = WORLD_STATE_GAME_OVER;
 		}*/

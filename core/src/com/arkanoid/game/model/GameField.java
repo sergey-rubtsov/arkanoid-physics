@@ -53,7 +53,7 @@ public class GameField implements ContactListener {
 	public static final int WORLD_HEIGHT = Gdx.graphics.getHeight();
 	public static final int VAUS_WIDTH = WORLD_WIDTH / 5;	
 	public static final int VAUS_HEIGHT = WORLD_HEIGHT / 40;
-	public static final int VAUS_Y_POS = WORLD_HEIGHT / 40;
+	public static final int VAUS_Y_POS = WORLD_HEIGHT / 30;
 	
 	public static final int BRICK_WIDTH = WORLD_WIDTH / 10;	
 	public static final int BRICK_HEIGHT = WORLD_HEIGHT / 30;
@@ -101,7 +101,7 @@ public class GameField implements ContactListener {
 	}
 	
 	public void buildScene() {
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 12; i++) {
 			for (int j = 0; j < 10; j++) {
 				bricks.add(new Brick(this.world, BRICK_WIDTH / 2 + WORLD_WIDTH / 10 * j, WORLD_HEIGHT - BRICK_HEIGHT / 2 - BRICK_HEIGHT * i, BRICK_WIDTH, BRICK_HEIGHT));
 			}			
@@ -238,22 +238,22 @@ public class GameField implements ContactListener {
 		contactMask = 0;
 	}
 	
-	public void vausMove(float moveX, float moveY) {
+	public void vausTarget(int x) {
+		if (x < this.vaus.getXPos()) {
+			vausMove(-90f);
+		} else vausMove(90f);
+		
+	}
+	
+	public void vausMove(float moveX) {
 		Vector2 velocity = new Vector2(moveX, 0);
-		Vector2 impulse = new Vector2(0, moveY);
 		if ((this.vaus.getBody().getPosition().x - this.vaus.width / 2) <= 0) {
 			velocity = new Vector2(100, 0);
 		}
 		if ((this.vaus.getBody().getPosition().x + this.vaus.width / 2) >= WORLD_WIDTH) {
 			velocity = new Vector2(-100, 0);
 		}
-		this.vaus.getBody().setLinearVelocity(velocity);
-		if (this.vaus.getBody().getPosition().y < VAUS_Y_POS * 2 && moveY > 0) {
-			this.vaus.getBody().setLinearVelocity(impulse);
-		}
-		if (this.vaus.getBody().getPosition().y > VAUS_Y_POS / 2 && moveY < 0) {
-			this.vaus.getBody().setLinearVelocity(impulse);
-		}		
+		this.vaus.getBody().setLinearVelocity(velocity);		
 	}
 	
 	public void changeGravity(float accelX, float accelY) {

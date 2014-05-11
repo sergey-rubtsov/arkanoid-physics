@@ -38,6 +38,7 @@ public class GameScreen implements Screen {
 	static final int GAME_PAUSED = 2;
 	static final int GAME_LEVEL_END = 3;
 	static final int GAME_OVER = 4;
+	
 	public static final int WORLD_WIDTH = Gdx.graphics.getWidth();
 	public static final int WORLD_HEIGHT = Gdx.graphics.getHeight();
 
@@ -54,8 +55,10 @@ public class GameScreen implements Screen {
 	WorldListener worldListener;
 	
 	private Rectangle pauseBounds;
-	public Rectangle resumeBounds;
-	public Rectangle quitBounds;
+	private Rectangle resumeBounds;
+	private Rectangle quitBounds;
+	private Rectangle vausControl;
+	
 	int lastScore;
 	String scoreString;
 
@@ -66,7 +69,7 @@ public class GameScreen implements Screen {
 		guiCam = new OrthographicCamera(WORLD_WIDTH, WORLD_HEIGHT);
 		guiCam.position.set(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, 0);
 		touchPoint = new Vector3();
-		batcher = new SpriteBatcher();
+		batcher = new SpriteBatcher(this);
 		renderer = new GLShapeRenderer();
 		debugRenderer = new Box2DDebugRenderer();
 		worldListener = new WorldListener() {
@@ -107,16 +110,25 @@ public class GameScreen implements Screen {
 		};
 		field = new GameField(worldListener);
 		
-		//pauseBounds = new Rectangle(WORLD_WIDTH - WORLD_WIDTH / 5, WORLD_HEIGHT , WORLD_WIDTH / 5, WORLD_HEIGHT / 5);
-		//resumeBounds = new Rectangle(WORLD_WIDTH / 2 - WORLD_WIDTH * 3 / 10, 240, 192, 36);
-		//quitBounds = new Rectangle(160 - 96, 240 - 36, 192, 36);
+		vausControl = new Rectangle(0, 0, WORLD_WIDTH, GameField.VAUS_HEIGHT * 3);
+		pauseBounds = new Rectangle(WORLD_WIDTH - WORLD_WIDTH / 5, WORLD_HEIGHT - WORLD_HEIGHT * 10 / 75 , 64, 64);
+		resumeBounds = new Rectangle(WORLD_WIDTH / 2 - WORLD_WIDTH * 3 / 10, WORLD_HEIGHT / 2, 192, 48);
+		quitBounds = new Rectangle(WORLD_WIDTH / 2 - WORLD_WIDTH * 3 / 10, WORLD_HEIGHT / 2 - WORLD_HEIGHT * 75 / 1000, 192, 48);	
 		
-
- 		pauseBounds = new Rectangle(320 - 64, 480 - 64, 64, 64);
-		resumeBounds = new Rectangle(160 - 96, 240, 192, 36);
-		quitBounds = new Rectangle(160 - 96, 240 - 36, 192, 36);
 		lastScore = 0;
 		scoreString = "SCORE: 0";
+	}
+	
+	public Rectangle getPauseBounds() {
+		return pauseBounds;
+	}	
+
+	public Rectangle getResumeBounds() {
+		return resumeBounds;
+	}
+	
+	public Rectangle getQuitBounds() {
+		return quitBounds;
 	}
 
 	private void updateReady() {
@@ -126,36 +138,39 @@ public class GameScreen implements Screen {
 	}
 
 	private void updateRunning() {
+		
 		if (Gdx.input.justTouched()) {
 			guiCam.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-
 			if (pauseBounds.contains(touchPoint.x, touchPoint.y)) {
 				Assets.playSound(Assets.menuSound);
 				state = GAME_PAUSED;
 				return;
 			}
-		}		
-		ApplicationType appType = Gdx.app.getType();
+			if (vausControl.contains(touchPoint.x, touchPoint.y)) {
+				field.vausTarget(Gdx.input.getX());
+				return;
+			}
+		}
 		
-		// should work also with Gdx.input.isPeripheralAvailable(Peripheral.Accelerometer)
+		ApplicationType appType = Gdx.app.getType();		
+
 		if (appType == ApplicationType.Android || appType == ApplicationType.iOS) {
 			field.changeGravity(Gdx.input.getAccelerometerX(), Gdx.input.getAccelerometerY());
 		} else {
 			float moveX = 0;
-			float moveY = 0;
 			if (Gdx.input.isKeyPressed(Keys.DPAD_LEFT)) moveX = -60f;
 			if (Gdx.input.isKeyPressed(Keys.DPAD_RIGHT)) moveX = 60f;
-			if (Gdx.input.isKeyPressed(Keys.DPAD_UP)) moveY = 60f;
-			if (Gdx.input.isKeyPressed(Keys.DPAD_DOWN)) moveY = -60f;
+			field.vausMove(moveX);
 			float accelX = 0;
 			float accelY = 0;
 			if (Gdx.input.isKeyPressed(Keys.A)) accelX = 5f;
 			if (Gdx.input.isKeyPressed(Keys.D)) accelX = -5f;
 			if (Gdx.input.isKeyPressed(Keys.W)) accelY = 5f;
 			if (Gdx.input.isKeyPressed(Keys.S)) accelY = -5f;
-			field.vausMove(moveX, moveY);			
 			field.changeGravity(accelX, accelY);
 		}
+					
+		
 		if (field.state == GameField.WORLD_STATE_NEXT_LEVEL) {
 			state = GAME_LEVEL_END;
 		}
@@ -285,9 +300,5 @@ public class GameScreen implements Screen {
 		renderer.dispose();;
 		debugRenderer.dispose();
 		field.getWorld().dispose();
-	}
-
-	public Rectangle getPauseBounds() {
-		return pauseBounds;
 	}
 }

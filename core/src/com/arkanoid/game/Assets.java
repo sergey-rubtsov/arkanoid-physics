@@ -30,6 +30,8 @@ public class Assets {
 	public static Texture items;
 	public static TextureRegion mainMenu;
 	public static TextureRegion pauseMenu;
+	public static TextureRegion pauseResumeMenu;
+	public static TextureRegion pauseQuitMenu;
 	public static TextureRegion ready;
 	public static TextureRegion gameOver;
 	public static TextureRegion highScoresRegion;
@@ -91,7 +93,10 @@ public class Assets {
 		items = loadTexture("data/items.png");
 
 		mainMenu = new TextureRegion(items, 0, 224, 300, 110);
-		pauseMenu = new TextureRegion(items, 224, 128, 192, 96);
+		
+		pauseResumeMenu = new TextureRegion(items, 224, 128, 192, 48);
+		pauseQuitMenu = new TextureRegion(items, 224, 176, 192, 48);
+		
 		ready = new TextureRegion(items, 320, 224, 192, 32);
 		gameOver = new TextureRegion(items, 352, 256, 160, 96);
 		highScoresRegion = new TextureRegion(Assets.items, 0, 257, 300, 110 / 3);

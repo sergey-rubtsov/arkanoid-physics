@@ -51,10 +51,7 @@ public class GameRendering {
 	}
 
 	private void renderVaus() {
-		Vaus vaus = this.field.getVaus();
-		Body body = vaus.getBody();
-		//body.getFixtureList().
-		renderer.fillRectangle(vaus.getRectangle());	
+		renderer.fillRectangle(this.field.getVaus().getRectangle());	
 	}
 
 	private void renderBall() {

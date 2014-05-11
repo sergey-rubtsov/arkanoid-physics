@@ -15,7 +15,10 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class SpriteBatcher extends SpriteBatch {
 	
-	public SpriteBatcher() {
+	private GameScreen screen;
+	
+	public SpriteBatcher(GameScreen screen) {
+		this.screen = screen;
 	}
 	
 	public void renderBackground() {
@@ -65,16 +68,19 @@ public class SpriteBatcher extends SpriteBatch {
 	}
 	
 	public void presentReady() {
-		draw(Assets.ready, 160 - 192 / 2, 240 - 32 / 2, 192, 32);
+		draw(Assets.ready, this.screen.WORLD_WIDTH / 2 - this.screen.WORLD_WIDTH * 3 / 10, this.screen.WORLD_HEIGHT / 2, 192, 32);
 	}
 
 	public void presentRunning() {
-		draw(Assets.pause, 320 - 64, 480 - 64, 64, 64);
+		Rectangle bounds = this.screen.getPauseBounds();
+		draw(Assets.pause, bounds.x, bounds.y, bounds.width, bounds.height);
 	}
 
 	public void presentPaused() {
-		draw(Assets.pauseMenu, 160 - 192 / 2, 240 - 96 / 2, 192, 96);
-		//Assets.font.draw(this, "test", 16, 480 - 20);
+		Rectangle bounds = this.screen.getQuitBounds();
+		draw(Assets.pauseQuitMenu, bounds.x, bounds.y, bounds.width, bounds.height);
+		bounds = this.screen.getResumeBounds();
+		draw(Assets.pauseResumeMenu, bounds.x, bounds.y, bounds.width, bounds.height);
 	}
 
 	public void presentLevelEnd() {

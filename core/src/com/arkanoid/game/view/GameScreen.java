@@ -58,9 +58,6 @@ public class GameScreen implements Screen {
 	private Rectangle resumeBounds;
 	private Rectangle quitBounds;
 	private Rectangle vausControl;
-	
-	int lastScore;
-	String scoreString;
 
 	public GameScreen(Game game) {
 		this.game = game;
@@ -113,10 +110,7 @@ public class GameScreen implements Screen {
 		vausControl = new Rectangle(0, 0, WORLD_WIDTH, GameField.VAUS_HEIGHT * 3);
 		pauseBounds = new Rectangle(WORLD_WIDTH - WORLD_WIDTH / 5, WORLD_HEIGHT - WORLD_HEIGHT * 10 / 75 , 64, 64);
 		resumeBounds = new Rectangle(WORLD_WIDTH / 2 - WORLD_WIDTH * 3 / 10, WORLD_HEIGHT / 2, 192, 48);
-		quitBounds = new Rectangle(WORLD_WIDTH / 2 - WORLD_WIDTH * 3 / 10, WORLD_HEIGHT / 2 - WORLD_HEIGHT * 75 / 1000, 192, 48);	
-		
-		lastScore = 0;
-		scoreString = "SCORE: 0";
+		quitBounds = new Rectangle(WORLD_WIDTH / 2 - WORLD_WIDTH * 3 / 10, WORLD_HEIGHT / 2 - WORLD_HEIGHT * 75 / 1000, 192, 48);
 	}
 	
 	public Rectangle getPauseBounds() {
@@ -168,9 +162,7 @@ public class GameScreen implements Screen {
 			if (Gdx.input.isKeyPressed(Keys.W)) accelY = 5f;
 			if (Gdx.input.isKeyPressed(Keys.S)) accelY = -5f;
 			field.changeGravity(accelX, accelY);
-		}
-					
-		
+		}		
 		if (field.state == GameField.WORLD_STATE_NEXT_LEVEL) {
 			state = GAME_LEVEL_END;
 		}
@@ -197,8 +189,9 @@ public class GameScreen implements Screen {
 
 	private void updateLevelEnd() {
 		if (Gdx.input.justTouched()) {
-			field = new GameField(worldListener);
-			state = GAME_READY;
+			//field = new GameField(worldListener);
+			field.loadNextLevel();
+			state = GAME_RUNNING;
 		}
 	}
 
@@ -230,12 +223,14 @@ public class GameScreen implements Screen {
 		case GAME_RUNNING:
 			field.step();
 			batcher.presentRunning();
+			batcher.renderLives(field.getLives());
 			break;
 		case GAME_READY:
 			batcher.presentReady();
 			break;			
 		case GAME_PAUSED:
 			batcher.presentPaused();
+			batcher.renderLives(field.getLives());
 			break;
 		case GAME_LEVEL_END:
 			batcher.presentLevelEnd();

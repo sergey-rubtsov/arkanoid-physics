@@ -22,6 +22,7 @@ import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
@@ -63,6 +64,8 @@ public class GameField implements ContactListener {
 	public static final int WORLD_STATE_RUNNING = 0;
 	public static final int WORLD_STATE_NEXT_LEVEL = 1;
 	public static final int WORLD_STATE_GAME_OVER = 2;
+	public static final int DEFAULT_LIVES = 3;
+	
 	public static final Vector2 gravity = new Vector2(0, 0);
 	
 	WorldListener listener;
@@ -75,9 +78,11 @@ public class GameField implements ContactListener {
 	long gameTime;
 	
 	private final Vaus vaus;
-	private final Ball ball;
+	private Ball ball;
 	private final Border border;
 	private List<Brick> bricks;
+	
+	private int lives;
 
 	private Brick bumpedBrick;
 	private int contactMask;
@@ -88,7 +93,7 @@ public class GameField implements ContactListener {
 		this.vaus = new Vaus(world, WORLD_WIDTH / 2, VAUS_Y_POS, VAUS_WIDTH, VAUS_HEIGHT);
 		this.ball = new Ball(world, WORLD_WIDTH / 2, 300, BALL_RADIUS);
 		this.border = new Border(world);
-		Border.createBorder(world, new Vector2[]{new Vector2(1, 1), new Vector2(WORLD_WIDTH - 1, 1)}, 10f, 0f);
+		//Border.createBorder(world, new Vector2[]{new Vector2(1, 1), new Vector2(WORLD_WIDTH - 1, 1)}, 10f, 0f);
 		this.bumpedBrick = null;
 		this.contactMask = 0;
 		this.bricks = new ArrayList<Brick>();
@@ -96,17 +101,9 @@ public class GameField implements ContactListener {
 		
 		this.listener = listener;
 		rand = new Random();		
-
-		this.state = WORLD_STATE_RUNNING;
-	}
-	
-	public void buildScene() {
-		for (int i = 0; i < 12; i++) {
-			for (int j = 0; j < 10; j++) {
-				bricks.add(new Brick(this.world, BRICK_WIDTH / 2 + WORLD_WIDTH / 10 * j, WORLD_HEIGHT - BRICK_HEIGHT / 2 - BRICK_HEIGHT * i, BRICK_WIDTH, BRICK_HEIGHT));
-			}			
-		}
-		launchBall();
+		
+		this.lives = DEFAULT_LIVES;
+		this.state = WORLD_STATE_RUNNING;		
 	}
 	
 	public void launchBall() {
@@ -118,6 +115,7 @@ public class GameField implements ContactListener {
 		int iters = 4;
 		step(iters);
 		getWorldListener().tick();
+		checkLostBall();
 	}
 	
 	public void step(int iters) {
@@ -188,8 +186,7 @@ public class GameField implements ContactListener {
 		for (int i = 0; i < 10; i++) {
 			world.step(1 / 60f, 10, 10);
 			ball.getBody().applyLinearImpulse(normal, ball.getBody().getPosition(), true);
-		}
-		
+		}		
 		getWorldListener().processBallAndVausContact();
 	}
 	
@@ -199,21 +196,62 @@ public class GameField implements ContactListener {
 	}
 	
 	public void removeBrick(Brick brick) {
+		removeBody(brick.getBody());
+		this.bricks.remove(brick);
+		brick = null;
+		checkBricksCount();
+	}
+	
+	private void checkBricksCount() {
+		if (this.bricks.size() <= 0) {
+			nextLevelState();
+		}		
+	}
+
+	private void nextLevelState() {
+		state = WORLD_STATE_NEXT_LEVEL;		
+	}
+	
+	public void buildScene() {
+		for (int i = 0; i < 1; i++) {
+			for (int j = 4; j < 5; j++) {
+				bricks.add(new Brick(this.world, BRICK_WIDTH / 2 + WORLD_WIDTH / 10 * j, WORLD_HEIGHT - BRICK_HEIGHT / 2 - BRICK_HEIGHT * i, BRICK_WIDTH, BRICK_HEIGHT));
+			}			
+		}
+		launchBall();
+	}
+	
+	public void loadNextLevel() {
+		state = WORLD_STATE_RUNNING;
+		buildScene();
+		rebuildBall();		
+	}
+	
+	public void rebuildBall() {
+		removeBall();
+		this.ball = new Ball(world, WORLD_WIDTH / 2, 300, BALL_RADIUS);
+		launchBall();
+	}
+
+	public void removeBall() {
+		removeBody(this.ball.getBody());
+		this.ball = null;		
+	}
+	
+	public void removeBody(Body body) {
 		step(1);
 		if(!world.isLocked()) {			
-			if (brick != null) {
-				brick.getBody().setUserData(null);				
+			if (body != null) {
+				body.setUserData(null);				
 				//to prevent some obscure c assertion that happened randomly once in a blue moon
-			    final Array<JointEdge> list = brick.getBody().getJointList();
+			    final Array<JointEdge> list = body.getJointList();
 			    for (JointEdge edge : list) {
 			        world.destroyJoint(edge.joint);
 			    }
 			    // actual remove
-			    this.world.destroyBody(brick.getBody());
-				this.bricks.remove(brick);
-				brick = null;
+			    this.world.destroyBody(body);
 			}
-		}
+		}		
 	}
 
 	@Override
@@ -241,8 +279,7 @@ public class GameField implements ContactListener {
 	public void vausTarget(int x) {
 		if (x < this.vaus.getXPos()) {
 			vausMove(-90f);
-		} else vausMove(90f);
-		
+		} else vausMove(90f);		
 	}
 	
 	public void vausMove(float moveX) {
@@ -260,10 +297,15 @@ public class GameField implements ContactListener {
 		//this.world.setGravity(new Vector2(accelX, accelY));
 	}
 
-	private void checkGameOver() {
-/*		if (true) {
-			state = WORLD_STATE_GAME_OVER;
-		}*/
+	private void checkLostBall() {
+		if (this.ball.getYPos() < -BALL_RADIUS) {
+			lives--;
+			if (lives <= 0) {
+				state = WORLD_STATE_GAME_OVER;
+			} else {
+				rebuildBall();
+			}			
+		}
 	}
 
 	public Ball getBall() {
@@ -288,5 +330,13 @@ public class GameField implements ContactListener {
 	
 	public List<Brick> getBricks() {
 		return bricks;
+	}
+
+	public int getLives() {
+		return lives;
+	}
+
+	public void setLives(int lives) {
+		this.lives = lives;		
 	}
 }

@@ -68,7 +68,7 @@ public class SpriteBatcher extends SpriteBatch {
 	}
 	
 	public void presentReady() {
-		draw(Assets.ready, this.screen.WORLD_WIDTH / 2 - this.screen.WORLD_WIDTH * 3 / 10, this.screen.WORLD_HEIGHT / 2, 192, 32);
+		draw(Assets.ready, GameScreen.WORLD_WIDTH / 2 - GameScreen.WORLD_WIDTH * 3 / 10, GameScreen.WORLD_HEIGHT / 2, 192, 32);
 	}
 
 	public void presentRunning() {
@@ -90,4 +90,10 @@ public class SpriteBatcher extends SpriteBatch {
 	public void presentGameOver () {
 		draw(Assets.gameOver, 160 - 160 / 2, 240 - 96 / 2, 160, 96);
 	}
+	
+	public void renderLives(int lives) {
+		String livesString = "Lives: " + lives;
+		Assets.font.draw(this, livesString, 16, GameScreen.WORLD_HEIGHT - 20);
+	}
+
 }

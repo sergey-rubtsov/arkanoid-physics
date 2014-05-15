@@ -19,7 +19,6 @@ package com.arkanoid.game.view;
 import com.arkanoid.game.Assets;
 import com.arkanoid.game.model.GameField.WorldListener;
 import com.arkanoid.game.model.GameField;
-import com.arkanoid.game.utils.GLShapeRenderer;
 import com.arkanoid.game.utils.SpriteBatcher;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Input.Keys;
@@ -48,8 +47,8 @@ public class GameScreen implements Screen {
 	OrthographicCamera guiCam;
 	Vector3 touchPoint;
 	SpriteBatcher batcher;
-	GLShapeRenderer renderer;
-	Box2DDebugRenderer debugRenderer;	
+
+	//Box2DDebugRenderer debugRenderer;	
 	
 	GameField field;
 	WorldListener worldListener;
@@ -67,8 +66,7 @@ public class GameScreen implements Screen {
 		guiCam.position.set(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, 0);
 		touchPoint = new Vector3();
 		batcher = new SpriteBatcher(this);
-		renderer = new GLShapeRenderer();
-		debugRenderer = new Box2DDebugRenderer();
+		//debugRenderer = new Box2DDebugRenderer();
 		worldListener = new WorldListener() {
 			@Override
 			public void gameStarted() {								
@@ -209,11 +207,8 @@ public class GameScreen implements Screen {
 		batcher.renderBall(field.getBall());
 		batcher.renderBricks(field.getBricks());
 		batcher.renderVaus(field.getVaus());
-		debugRenderer.render(field.getWorld(), guiCam.combined);
-		
-		//renderer.render(field.getWorld(), guiCam.combined);
-		//renderer.fillRectangle(field.getVaus().getRectangle());
-		
+		//debugRenderer.render(field.getWorld(), guiCam.combined);
+	
 		guiCam.update();
 		batcher.setProjectionMatrix(guiCam.combined);
 		batcher.enableBlending();
@@ -292,8 +287,7 @@ public class GameScreen implements Screen {
 	@Override
 	public void dispose() {
 		batcher.dispose();
-		renderer.dispose();;
-		debugRenderer.dispose();
+		//debugRenderer.dispose();
 		field.getWorld().dispose();
 	}
 }

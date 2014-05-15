@@ -57,6 +57,10 @@ project(":android") {
     }
 }
 
+subprojects {
+    apply plugin: "eclipse"
+}
+
 project(":core") {
     apply plugin: "java"
 

@@ -32,7 +32,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.WorldManifold;
 import com.badlogic.gdx.utils.Array;
 
-public class GameField implements ContactListener {
+public class GameField implements ContactListener, Constants {
 	public static interface WorldListener {
 
 		public void gameStarted();
@@ -50,21 +50,7 @@ public class GameField implements ContactListener {
 		public void processBallAndBorderContact();
 	}
 
-	public static final int WORLD_WIDTH = Gdx.graphics.getWidth();
-	public static final int WORLD_HEIGHT = Gdx.graphics.getHeight();
-	public static final int VAUS_WIDTH = WORLD_WIDTH / 5;	
-	public static final int VAUS_HEIGHT = WORLD_HEIGHT / 40;
-	public static final int VAUS_Y_POS = WORLD_HEIGHT / 30;
-	
-	public static final int BRICK_WIDTH = WORLD_WIDTH / 10;	
-	public static final int BRICK_HEIGHT = WORLD_HEIGHT / 30;
-	
-	public static final int BALL_RADIUS = WORLD_WIDTH / 40;
-	
-	public static final int WORLD_STATE_RUNNING = 0;
-	public static final int WORLD_STATE_NEXT_LEVEL = 1;
-	public static final int WORLD_STATE_GAME_OVER = 2;
-	public static final int DEFAULT_LIVES = 3;
+
 	
 	public static final Vector2 gravity = new Vector2(0, 0);
 	
@@ -74,8 +60,11 @@ public class GameField implements ContactListener {
 	public int state;
 	
 	private World world;
+	private int level;
 	
 	long gameTime;
+	
+	private final WorldBuilder builder;
 	
 	private final Vaus vaus;
 	private Ball ball;
@@ -90,6 +79,9 @@ public class GameField implements ContactListener {
 	public GameField(WorldListener listener) {
 		this.world = new World(GameField.gravity, true);
 		this.world.setContactListener(this);
+		this.level = 0;
+		
+		this.builder = new WorldBuilder(level);
 		this.vaus = new Vaus(world, WORLD_WIDTH / 2, VAUS_Y_POS, VAUS_WIDTH, VAUS_HEIGHT);
 		this.ball = new Ball(world, WORLD_WIDTH / 2, 300, BALL_RADIUS);
 		this.border = new Border(world);
@@ -97,7 +89,7 @@ public class GameField implements ContactListener {
 		this.bumpedBrick = null;
 		this.contactMask = 0;
 		this.bricks = new ArrayList<Brick>();
-		buildScene();
+		buildScene(level);
 		
 		this.listener = listener;
 		rand = new Random();		
@@ -112,7 +104,7 @@ public class GameField implements ContactListener {
 	}
 	
 	public void step() {
-		int iters = 4;
+		int iters = 2;
 		step(iters);
 		getWorldListener().tick();
 		checkLostBall();
@@ -221,9 +213,14 @@ public class GameField implements ContactListener {
 		launchBall();
 	}
 	
+	public void buildScene(int level) {
+		buildScene();		
+	}
+	
 	public void loadNextLevel() {
 		state = WORLD_STATE_RUNNING;
-		buildScene();
+		level++;
+		buildScene(level);
 		rebuildBall();		
 	}
 	

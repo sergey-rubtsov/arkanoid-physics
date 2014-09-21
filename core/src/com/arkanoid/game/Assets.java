@@ -23,7 +23,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-public class Assets {
+public class Assets {	
 	public static Texture background;
 	public static TextureRegion backgroundRegion;
 
@@ -72,11 +72,11 @@ public class Assets {
 	
 	public static Sound pauseSound;
 
-	public static Texture loadTexture (String file) {
+	public static Texture loadTexture(String file) {
 		return new Texture(Gdx.files.internal(file));
 	}
 
-	public static void load () {
+	public static void load() {
 		ball = loadTexture("data/balls/defaultBall.png");
 		bonus = loadTexture("data/bonuses/bonusAddLife.png");
 		brick = loadTexture("data/bricks/defaultBrick.png");

@@ -6,7 +6,6 @@ import com.arkanoid.game.Assets;
 import com.arkanoid.game.model.Ball;
 import com.arkanoid.game.model.Brick;
 import com.arkanoid.game.model.GameField;
-import com.arkanoid.game.model.PhysicalObject;
 import com.arkanoid.game.model.Vaus;
 import com.arkanoid.game.view.GameScreen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -68,7 +67,7 @@ public class SpriteBatcher extends SpriteBatch {
 	}
 	
 	public void presentReady() {
-		draw(Assets.ready, GameScreen.WORLD_WIDTH / 2 - GameScreen.WORLD_WIDTH * 3 / 10, GameScreen.WORLD_HEIGHT / 2, 192, 32);
+		draw(Assets.ready, GameScreen.WORLD_WIDTH / 2 - GameScreen.WORLD_WIDTH * 3 / 10, GameScreen.WORLD_HEIGHT / 2, GameScreen.WORLD_HEIGHT * 25 / 100, GameScreen.WORLD_WIDTH / 10);
 	}
 
 	public void presentRunning() {
@@ -88,12 +87,12 @@ public class SpriteBatcher extends SpriteBatch {
 	}
 
 	public void presentGameOver () {
-		draw(Assets.gameOver, 160 - 160 / 2, 240 - 96 / 2, 160, 96);
+		draw(Assets.gameOver, GameScreen.WORLD_HEIGHT / 3 - GameScreen.WORLD_HEIGHT / 6, GameScreen.WORLD_WIDTH * 75 / 100 - GameScreen.WORLD_WIDTH * 15 / 100, GameScreen.WORLD_HEIGHT / 3, GameScreen.WORLD_WIDTH * 3 / 10);
 	}
 	
 	public void renderLives(int lives) {
 		String livesString = "Lives: " + lives;
-		Assets.font.draw(this, livesString, 16, GameScreen.WORLD_HEIGHT - 20);
+		Assets.font.draw(this, livesString, GameScreen.WORLD_WIDTH / 20, GameScreen.WORLD_HEIGHT - GameScreen.WORLD_HEIGHT / 24);
 	}
 
 }
